@@ -45,8 +45,17 @@ window.config = {
   }
 };
 ```
-# How to contribute
+* Run OHIF
+```bash
+yarn start # in the OHIF platform/viewer folder
+```
+* Opening your first exam
+```
+http://localhost:3000/findings?StudyInstanceUIDs=$StudyIdHere&ImageSetID=$ImageSetIdHere
+```
 
+
+# How to contribute
 ```bash
 git clone git@github.com:RadicalImaging/OhiF-healthlake.git
 cd OhiF-healthlake
