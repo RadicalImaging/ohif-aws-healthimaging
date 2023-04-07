@@ -1,6 +1,6 @@
 import {
     promisify
-} from 'node:util'
+} from 'node:util';
 import {
     pipeline
 } from 'node:stream';
