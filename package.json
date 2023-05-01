@@ -1,6 +1,6 @@
 {
   "name": "ohif-healthlake",
-  "version": "0.0.10",
+  "version": "0.0.11",
   "description": "Support reading tree structured metadata",
   "author": "Bill Wallace, Mateus Freira,Radical Imaging",
   "license": "MIT",
