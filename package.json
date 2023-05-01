@@ -1,6 +1,6 @@
 {
   "name": "ohif-healthlake",
-  "version": "0.0.8",
+  "version": "0.0.12",
   "description": "Support reading tree structured metadata",
   "author": "Bill Wallace, Mateus Freira,Radical Imaging",
   "license": "MIT",
@@ -29,6 +29,7 @@
     "lint": "npx eslint --fix ."
   },
   "peerDependencies": {
+    "@cornerstonejs/dicom-image-loader": "0.4.0",
     "@ohif/core": "^3.0.0",
     "@ohif/extension-cornerstone": "^3.0.0",
     "@ohif/extension-default": "^3.0.0",
