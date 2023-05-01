@@ -22,6 +22,7 @@ jest.mock('./awsCredentials', () => ({
 describe('loadMetaDataInternal', () => {
   const config = {
     endpoint: 'https://flexview.ai',
+    awsAccessKeyID: 'test-access-key',
     collections: {}
   };
 
