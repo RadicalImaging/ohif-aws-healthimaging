@@ -10,7 +10,7 @@ import {
 } from 'http';
 
 const streamPipeline = promisify(pipeline);
-const awsHost = process.AWS_HOST || 'medical-imaging.us-east-1.amazonaws.com';
+const awsHost = process.AWS_HOST || 'runtime-healthlake-imaging.us-east-1.amazonaws.com';
 const headers = {
     'Access-Control-Allow-Origin': '*',
     'Access-Control-Allow-Methods': 'OPTIONS, POST, GET',

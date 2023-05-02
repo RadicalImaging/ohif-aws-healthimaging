@@ -5,7 +5,10 @@
 ## Prerequisites
 * Node.js +14
 * OHIF follow the [Getting started guide if needed](https://v3-docs.ohif.org/development/getting-started/)
-* Install health lake package `yarn add  ohif-healthlake`
+* Install health lake package 
+  * `yarn add  ohif-healthlake` 
+  * yarn add file:/Users/mateusfreira/git/radicalimage/OHIFExtensionsAndModes/extensions/OhiF-healthlake
+  * ln extensions/ohif-healthlake $PATH_TO_SRC
 * Create an access key in the AWS portal
 * Follow AWS documentation on how to create a medical imaging data source
 * Start the HealthLake proxy to secure your access keys
@@ -24,6 +27,8 @@ docker run -p 8089:8089 -e AWS_ACCESS_KEY_ID='YOUR_KEY' -e AWS_SECRET_ACCESS_KEY
 
 ```
 * Configure the data source to access healthlake via the proxy
+
+platform/viewer/public/config/default.js
 ```js
 window.config = {
   friendlyName: 'HealthLake Data',
@@ -52,6 +57,7 @@ yarn start # in the OHIF platform/viewer folder
 * Opening your first exam
 ```
 http://localhost:3000/findings?StudyInstanceUIDs=$StudyIdHere&ImageSetID=$ImageSetIdHere
+http://localhost:3000/findings?StudyInstanceUIDs=1.3.6.1.4.1.5962.1.2.1.20040826185059.5457&ImageSetID=4dae4905b422c9172dc9f61a422ecaf6
 ```
 
 
