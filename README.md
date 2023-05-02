@@ -5,12 +5,14 @@
 ## Prerequisites
 * Node.js +14
 * OHIF follow the [Getting started guide if needed](https://v3-docs.ohif.org/development/getting-started/)
+* Make sure you are checkout in the branch `v3-stable`
 * Install health lake package `yarn add  ohif-healthlake`
 * Create an access key in the AWS portal
 * Follow AWS documentation on how to create a medical imaging data source
 * Start the HealthLake proxy to secure your access keys
 ```bash
-docker run -p 8089:8089 -e AWS_ACCESS_KEY_ID='YOUR_KEY' -e AWS_SECRET_ACCESS_KEY='YOUR_SECRET' -e AWS_REGIOS='YOUR_REGION' mateusfreira/ohif-healthlake-proxy
+# AWS_HOST
+docker run -p 8089:8089 -e AWS_ACCESS_KEY_ID='YOUR_KEY' -e AWS_SECRET_ACCESS_KEY='YOUR_SECRET' -e AWS_REGION='YOUR_REGION' mateusfreira/ohif-healthlake-proxy
 ```
 * Add healthlake adapter as an OHIF plugin `platform/viewer/pluginConfig.json`
 ```json
