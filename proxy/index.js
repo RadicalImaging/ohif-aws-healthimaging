@@ -10,7 +10,7 @@ import {
 } from 'http';
 
 const streamPipeline = promisify(pipeline);
-const awsHost = process.env.AWS_HOST || 'medical-imaging.us-east-1.amazonaws.com';
+const awsHost = process.env.AWS_HOST || 'runtime-healthlake-imaging.us-east-1.amazonaws.com';
 const headers = {
     'Access-Control-Allow-Origin': '*',
     'Access-Control-Allow-Methods': 'OPTIONS, POST, GET',
@@ -34,7 +34,6 @@ const proxy = createServer(async (req, res) => {
     req.on('end', async () => {
         try {
             const uri = `https://${awsHost}${req.url}`;
-            console.log(uri);
             const newReq = {
                 path: req.url,
                 service: 'medical-imaging',
