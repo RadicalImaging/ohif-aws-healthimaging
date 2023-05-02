@@ -46,6 +46,7 @@ const proxy = createServer(async (req, res) => {
             res.writeHead(proxyRes.status, { ...headers,
                 ...proxyRes.headers
             });
+            console.log(proxyRes.headers)
             return await streamPipeline(proxyRes.body, res);
         } catch (err) {
             console.error(err);
