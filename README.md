@@ -6,7 +6,7 @@
 * Node.js +14
 * OHIF follow the [Getting started guide if needed](https://v3-docs.ohif.org/development/getting-started/)
 * Make sure you are checkout in the branch `v3-stable`
-* Install health lake package `yarn add  ohif-healthlake`
+* Install health lake package:
 * Create an access key in the AWS portal
 * Follow AWS documentation on how to create a medical imaging data source
 * Start the HealthLake proxy to secure your access keys
@@ -20,32 +20,31 @@ docker run -p 8089:8089 -e AWS_ACCESS_KEY_ID='YOUR_KEY' -e AWS_SECRET_ACCESS_KEY
     //....
     {
       "packageName": "ohif-healthlake",
-      "version": "0.0.8"
+      "version": "0.0.12"
     }
   ],
 
 ```
 * Configure the data source to access healthlake via the proxy
+
+platform/viewer/public/config/default.js
 ```js
-window.config = {
-  friendlyName: 'HealthLake Data',
-  namespace: 'ohif-healthlake.dataSourcesModule.healthlake',
-  sourceName: 'healthlake',
-  configuration: {
-    name: 'healthlake',
-    healthlake: {
-      datastoreID: $DATASTORE_NAME,
-      endpoint: 'http://localhost:8089',// Add here the address to you proxy
-    },
-    imageRendering: 'healthlake',
-    thumbnailRendering: 'wadors',
-    enableStudyLazyLoad: true,
-    supportsFuzzyMatching: false,
-    supportsWildcard: true,
-    staticWado: true,
-    singlepart: 'bulkdata,video,pdf,image/jphc',
+  //...
+  dataSources: [ {
+    friendlyName: 'HealthLake Data',
+    namespace: 'ohif-healthlake.dataSourcesModule.healthlake',
+    sourceName: 'healthlake',
+    configuration: {
+      name: 'healthlake',
+      healthlake: {
+        datastoreID: $YOUR_DATASTORE_ID,
+        endpoint: 'http://localhost:8089',// Add here the address to you proxy
+      },
+      singlepart: 'bulkdata,video,pdf,image/jphc',
+    }
   }
-};
+  ],
+
 ```
 * Run OHIF
 ```bash
@@ -53,9 +52,8 @@ yarn start # in the OHIF platform/viewer folder
 ```
 * Opening your first exam
 ```
-http://localhost:3000/findings?StudyInstanceUIDs=$StudyIdHere&ImageSetID=$ImageSetIdHere
+http://localhost:3000/viewers?StudyInstanceUIDs=$DICOMStudyUIDHere&ImageSetID=$ImageSetIDHere
 ```
-
 
 # How to contribute
 ```bash
