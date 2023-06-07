@@ -28,6 +28,12 @@ const config = {
         commonjs: 'cornerstone-wado-image-loader',
         amd: 'cornerstone-wado-image-loader',
       },
+      "@cornerstonejs/core": {
+        root: '@cornerstonejs/core',
+        commonjs2: '@cornerstonejs/core',
+        commonjs: '@cornerstonejs/core',
+        amd: '@cornerstonejs/core',
+      },
       "@cornerstonejs/dicom-image-loader": {
         root: '@cornerstonejs/dicom-image-loader',
         commonjs2: '@cornerstonejs/dicom-image-loader',
