@@ -1,6 +1,6 @@
 {
   "name": "ohif-healthlake",
-  "version": "0.0.12",
+  "version": "0.1.0",
   "description": "Support reading tree structured metadata",
   "author": "Bill Wallace, Mateus Freira,Radical Imaging",
   "license": "MIT",
@@ -35,7 +35,6 @@
     "@ohif/extension-default": "^3.0.0",
     "@ohif/i18n": "^1.0.0",
     "classnames": "^2.3.2",
-    "cornerstone-wado-image-loader": "^4.3.0",
     "dcmjs": "^0.28.0",
     "dicomweb-client": "^0.8.4",
     "prop-types": "^15.8.1",
