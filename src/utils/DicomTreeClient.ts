@@ -84,8 +84,6 @@ export default class DicomTreeClient extends api.DICOMwebClient {
     }
 
     async searchForSeries(options) {
-        if (!this.staticWado) return super.searchForSeries(options);
-
         const searchResult = await super.searchForSeries(options);
         const {
             queryParams

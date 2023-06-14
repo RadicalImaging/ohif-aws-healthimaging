@@ -50,7 +50,7 @@ const loadImageSets = async (config, filters) => {
     );
     const json = imageSetsMetadataSummaries.map(map.bind(null, config.datastoreID));
     const uniq = Object.values(json.reduce((cc, a) => {
-        cc[a['0020000D'].Value[0]] = a;
+        cc[a['00200010'].Value[0]] = a;
         return cc;
     }, {}));
     config.collections[json.ImageSetID] = uniq;
