@@ -105,6 +105,7 @@ export default class DicomTreeClient extends api.DICOMwebClient {
      * @returns
      */
     async retrieveMetadataTree(options) {
+        console.log("retrieveMetadataTree",options);
         const {
             studyInstanceUID,
             withCredentials = false
