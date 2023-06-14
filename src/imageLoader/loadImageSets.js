@@ -69,7 +69,7 @@ function map(datastoreId, item) {
         },
         "0020000D": {
             "vr": "UI",
-            "Value": [item.DICOMTags.DICOMStudyInstanceUID]
+            "Value": [item.DICOMTags.DICOMStudyInstanceUID + item.imageSetId]
         },
         "00200010": {
             "vr": "SH",
