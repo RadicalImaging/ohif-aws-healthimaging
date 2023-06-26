@@ -78,10 +78,10 @@ export function naturalizeMetadataTree(data:TreeMetadata): Types.InstanceMetadat
     const { DICOM: seriesDicom, Instances } = aSeries;
     for (const sopUID of Object.keys(Instances)) {
       try {
-        const { DICOM: instanceDicom, ImageFrames } = Instances[sopUID];
+        const { DICOM: instanceDicom, ImageFrames, ImageSetID: InstanceImageSetID } = Instances[sopUID];
         // Items are listed in decreasing priority, so make the new object first so it can be updated without
         // touching instanceDicom
-        const instance = Object.assign({ ImageSetID, DatastoreID, ImageFrames }, instanceDicom, seriesDicom, study, patient);
+        const instance = Object.assign({ ImageSetID: InstanceImageSetID || ImageSetID, DatastoreID, ImageFrames }, instanceDicom, seriesDicom, study, patient);
         ret.push(instance);
       } catch (reason) {
         console.log("Couldn't add", sopUID, reason);

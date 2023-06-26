@@ -5,7 +5,6 @@ import {
   errorHandler,
   classes,
 } from '@ohif/core';
-import cornerstoneWADOImageLoader from 'cornerstone-wado-image-loader';
 import cornerstoneDICOMImageLoader from '@cornerstonejs/dicom-image-loader';
 
 import { AwsV4Signer } from 'aws4fetch';
@@ -38,50 +37,48 @@ const retrievedStudies = {};
 
 const initializeHealthlakeFetch = (healthlake) => {
   if( !healthlake.endpoint ) throw new Error('endpoint is mandatory');
-  [cornerstoneWADOImageLoader, cornerstoneDICOMImageLoader].forEach(loader => {
-    loader.configure({
-      open: function (xhr: any, url: string) {
-        const urlParams = new URLSearchParams(url);
-        const datastoreId = urlParams.get('DatastoreID');
-        const collectionId = urlParams.get('ImageSetID');
-        const imageFrameId = urlParams.get('frameID');
-        const uri =
-          healthlake.endpoint +
-          '/runtime/datastore/' +
-          datastoreId +
-          '/imageset/' +
-          collectionId +
-          '/imageframe/' +
-          imageFrameId;
+  cornerstoneDICOMImageLoader.configure({
+    open: function (xhr: any, url: string) {
+      const urlParams = new URLSearchParams(url);
+      const datastoreId = urlParams.get('DatastoreID');
+      const collectionId = urlParams.get('ImageSetID');
+      const imageFrameId = urlParams.get('frameID');
+      const uri =
+        healthlake.endpoint +
+        '/runtime/datastore/' +
+        datastoreId +
+        '/imageset/' +
+        collectionId +
+        '/imageframe/' +
+        imageFrameId;
 
 
-        const signer = healthlake.awsAccessKeyID ? new AwsV4Signer({
-          ...awsCredentials(healthlake),
-          url: uri,
-        }) : null;
+      const signer = healthlake.awsAccessKeyID ? new AwsV4Signer({
+        ...awsCredentials(healthlake),
+        url: uri,
+      }) : null;
 
 
-        xhr.open('GET', uri, true);
-        xhr.wasGetResponseHeader = xhr.getResponseHeader;
-        xhr.getResponseHeader = function (key: string) {
-          if (key == 'Content-Type') return 'image/jphc';
-          return this.wasGetResponseHeader(key);
-        };
+      xhr.open('GET', uri, true);
+      xhr.wasGetResponseHeader = xhr.getResponseHeader;
+      xhr.getResponseHeader = function (key: string) {
+        if (key == 'Content-Type') return 'image/jphc';
+        return this.wasGetResponseHeader(key);
+      };
 
-        xhr.wasSend = xhr.send;
-        xhr.send = () => {
-          if (signer) {
-            signer.sign().then(({headers}) => {
-              xhr.setRequestHeader('x-amz-date', headers.get('x-amz-date'));
-              xhr.setRequestHeader('Authorization', headers.get('Authorization'));
-              xhr.wasSend();
-            });
-          } else {
+      xhr.wasSend = xhr.send;
+      xhr.send = () => {
+        if (signer) {
+          signer.sign().then(({headers}) => {
+            xhr.setRequestHeader('x-amz-date', headers.get('x-amz-date'));
+            xhr.setRequestHeader('Authorization', headers.get('Authorization'));
             xhr.wasSend();
-          }
+          });
+        } else {
+          xhr.wasSend();
         }
-      },
-    });
+      }
+    },
   });
 };
 
@@ -184,6 +181,7 @@ function createDicomWebTreeApi(dicomWebConfig, UserAuthenticationService) {
             ];
           }
 
+          console.log('Will perform qidoSearch', mappedParams);
           const results = await qidoSearch(
             qidoDicomWebClient,
             undefined,
@@ -394,6 +392,7 @@ function createDicomWebTreeApi(dicomWebConfig, UserAuthenticationService) {
      * tree structure, returning it.
      */
     _retrieveSeriesMetadataDeduplicated: async StudyInstanceUID => {
+      console.log('_retrieveSeriesMetadataDeduplicated', StudyInstanceUID);
       const aStudy = retrievedStudies[StudyInstanceUID];
       if (aStudy) {
         console.log('Already have study', aStudy);
@@ -413,6 +412,7 @@ function createDicomWebTreeApi(dicomWebConfig, UserAuthenticationService) {
           naturalizedInstancesMetadata.length,
           'instances'
         );
+        console.log('_retrieveSeriesMetadataDeduplicated',{ data, naturalizedInstancesMetadata});
         retrievedStudies[StudyInstanceUID] = naturalizedInstancesMetadata;
         console.timeEnd('Retrieve MetadataTree');
         return naturalizedInstancesMetadata;

@@ -50,7 +50,11 @@ const loadImageSets = async (config, filters) => {
     );
     const json = imageSetsMetadataSummaries.map(map.bind(null, config.datastoreID));
     const uniq = Object.values(json.reduce((cc, a) => {
-        cc[a['00080050'].Value[0]] = a;
+        if(!cc[a['0020000D'].Value[0]]){
+         cc[a['0020000D'].Value[0]] = a;
+        } else {
+         cc[a['0020000D'].Value[0]]['00200010'].Value.push(a['00200010'].Value[0]);
+        }
         return cc;
     }, {}));
     config.collections[json.ImageSetID] = uniq;
@@ -59,6 +63,10 @@ const loadImageSets = async (config, filters) => {
 
 function map(datastoreId, item) {
     return {
+        "00100020": {
+        "vr": "PN",
+        "Value": [item.DICOMTags.DICOMPatientId]
+        },
         "00100010": {
             "vr": "PN",
             "Value": [item.DICOMTags.DICOMPatientName]

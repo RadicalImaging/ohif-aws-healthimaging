@@ -52,6 +52,7 @@ function processResults(qidoStudies) {
       mrn: getString(qidoStudy['00100020']) || '', // medicalRecordNumber
       patientName: utils.formatPN(getName(qidoStudy['00100010'])) || '',
       instances: Number(getString(qidoStudy['00201208'])) || 0, // number
+      ImageSetID: getString(qidoStudy['00200010']),
       description: getString(qidoStudy['00081030']) || '',
       modalities:
         getString(
@@ -86,6 +87,7 @@ export function processSeriesResults(qidoSeries) {
         seriesDate: utils.formatDate(getString(qidoSeries['00080021'])),
         numSeriesInstances: Number(getString(qidoSeries['00201209'])),
         description: getString(qidoSeries['0008103E']),
+        ImageSetID: getString(qidoSeries['00200010'])
       })
     );
   }
@@ -108,6 +110,7 @@ async function search(
   seriesInstanceUid,
   queryParameters
 ) {
+  console.log('quido.search');
   let searchResult = await dicomWebClient.searchForStudies({
     studyInstanceUid: undefined,
     queryParams: queryParameters,
