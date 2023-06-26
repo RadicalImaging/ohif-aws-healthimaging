@@ -110,7 +110,6 @@ async function search(
   seriesInstanceUid,
   queryParameters
 ) {
-  console.log('quido.search');
   let searchResult = await dicomWebClient.searchForStudies({
     studyInstanceUid: undefined,
     queryParams: queryParameters,

@@ -77,15 +77,9 @@ export default class DicomTreeClient extends api.DICOMwebClient {
             queryParams
         } = options;
         queryParams.ImageSetID = ImageSetID;
-        console.log('searchForStudies',{ queryParams });
         if (!queryParams) return searchResult;
         const filtered = searchResult.filter(study => {
-            console.log(study);
             for (const key of Object.keys(DicomTreeClient.studyFilterKeys)) {
-                const willFilter = !this.filterItem(key, queryParams, study);
-                if(key==='ImageSetID' && !willFilter) {
-                    console.log(key, study[DicomTreeClient.studyFilterKeys[key]].Value[0], queryParams[key], willFilter, study);
-                }
                 if (!this.filterItem(key, queryParams, study)) return false;
             }
             return true;
@@ -122,9 +116,7 @@ export default class DicomTreeClient extends api.DICOMwebClient {
             studyInstanceUID,
             withCredentials = false
         } = options;
-        console.log("retrieveMetadataTree", options, search);
         if (!studyInstanceUID) {
-            console.log('No study instance uid, not retrieving');
             throw new Error(
                 'Study Instance UID is required for retrieval of study metadata'
             );
@@ -141,7 +133,6 @@ export default class DicomTreeClient extends api.DICOMwebClient {
                     StudyInstanceUID: studyInstanceUID
                 },
             });
-            console.log('* Studies query found', studies.length, 'studies', { studies });
             if (studies && studies.length) {
                 const [study] = studies;
                 datastoreID = study['00181002']?.Value?.[0] || datastoreID;
@@ -156,9 +147,7 @@ export default class DicomTreeClient extends api.DICOMwebClient {
             }
         }
         if (ImageSetID && datastoreID) {
-            console.log('* Loading metadata for', ImageSetID);
             if (this.healthlake.collections[ImageSetID]) {
-                console.log('* Returning previously fetched data', ImageSetID);
                 return this.healthlake.collections[ImageSetID];
             }
             return loadMetaDataInternal(datastoreID, ImageSetID, this.healthlake);
@@ -193,7 +182,6 @@ export default class DicomTreeClient extends api.DICOMwebClient {
             if (actual.length === 0) return true;
             if (desired.length === 0 || desired === '*') return true;
             if (desired[0] === '*' && desired[desired.length - 1] === '*') {
-                // console.log(`Comparing ${actual} to ${desired.substring(1, desired.length - 1)}`)
                 return actual.indexOf(desired.substring(1, desired.length - 1)) != -1;
             } else if (desired[desired.length - 1] === '*') {
                 return actual.indexOf(desired.substring(0, desired.length - 1)) != -1;
@@ -251,7 +239,6 @@ function reduceMetadata(metadataArray: any[]) {
     Object.keys(seriesBySerieId).forEach(key => {
         const series = seriesBySerieId[key];
         seriesBySerieId[key] = seriesBySerieId[key][0];
-        console.log(seriesBySerieId[key]);
         seriesBySerieId[key].Instances = series.reduce((acc, cur) => {
             return Object.assign(acc, cur.Instances);
         }, {});

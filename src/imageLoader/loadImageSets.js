@@ -31,7 +31,9 @@ async function getImageSets(datastoreId, config, awsFilter, _nextToken = '') {
     return imageSetsMetadataSummaries;
 }
 
+const loadImageSetsCache = new Map();
 const loadImageSets = async (config, filters) => {
+    const startTime = performance.now();
     const aswFilter = Object.keys(filters).reduce((obj,key) =>{
         const awsKey = ohifToAwsParam[key];
         if(awsKey) {
@@ -39,26 +41,49 @@ const loadImageSets = async (config, filters) => {
         }
         return obj;
     },{});
+    const cacheKey = JSON.stringify(aswFilter);
+    // Todo make it configurable
+    setTimeout(() => {
+        loadImageSetsCache.delete(cacheKey);
+    }, 1000 * 60 * 5);
+    const cached = loadImageSetsCache.get(cacheKey);
+    if (cached) {
+        performance.measure(
+            "healthlake:imagessets-load-from-cache", {
+                start: startTime,
+                detail: "cached",
+                end: performance.now(),
+            }
+        );
+        return cached;
+    } else {
+        const getImageSetPromise = getImageSets(config.datastoreID, config, aswFilter).then((imageSetsMetadataSummaries) => {
+            performance.measure(
+                "healthlake:imagessets-load", {
+                    start: startTime,
+                    detail: "request",
+                    end: performance.now(),
+                }
+            );
+            const json = imageSetsMetadataSummaries.map(map.bind(null, config.datastoreID));
+            const uniq = reduceImageSetsByStudy(json);
+            config.collections[json.ImageSetID] = uniq;
+            return uniq;
+        });
+        loadImageSetsCache.set(cacheKey, getImageSetPromise);
+        return getImageSetPromise;
+    }
+}
 
-    const startTime = performance.now();
-    const imageSetsMetadataSummaries = await getImageSets(config.datastoreID, config, aswFilter);
-    performance.measure(
-        "healthlake-imagessets-load", {
-            start: startTime,
-            end: performance.now(),
-        }
-    );
-    const json = imageSetsMetadataSummaries.map(map.bind(null, config.datastoreID));
-    const uniq = Object.values(json.reduce((cc, a) => {
-        if(!cc[a['0020000D'].Value[0]]){
-         cc[a['0020000D'].Value[0]] = a;
+function reduceImageSetsByStudy(json) {
+    return Object.values(json.reduce((cc, a) => {
+        if (!cc[a['0020000D'].Value[0]]) {
+            cc[a['0020000D'].Value[0]] = a;
         } else {
-         cc[a['0020000D'].Value[0]]['00200010'].Value.push(a['00200010'].Value[0]);
+            cc[a['0020000D'].Value[0]]['00200010'].Value.push(a['00200010'].Value[0]);
         }
         return cc;
     }, {}));
-    config.collections[json.ImageSetID] = uniq;
-    return uniq;
 }
 
 function map(datastoreId, item) {

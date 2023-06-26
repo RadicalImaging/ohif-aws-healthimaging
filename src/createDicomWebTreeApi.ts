@@ -128,7 +128,6 @@ function createDicomWebTreeApi(dicomWebConfig, UserAuthenticationService) {
   // TODO -> We'll need to merge auth later.
   const qidoDicomWebClient = new DicomTreeClient(qidoConfig);
   const wadoDicomWebClient = new DicomTreeClient(wadoConfig);
-  console.log("Initializing", qidoConfig, qidoDicomWebClient.healthlake);
 
   initializeHealthlakeFetch(qidoDicomWebClient.healthlake);
 
@@ -181,7 +180,6 @@ function createDicomWebTreeApi(dicomWebConfig, UserAuthenticationService) {
             ];
           }
 
-          console.log('Will perform qidoSearch', mappedParams);
           const results = await qidoSearch(
             qidoDicomWebClient,
             undefined,
@@ -392,7 +390,6 @@ function createDicomWebTreeApi(dicomWebConfig, UserAuthenticationService) {
      * tree structure, returning it.
      */
     _retrieveSeriesMetadataDeduplicated: async StudyInstanceUID => {
-      console.log('_retrieveSeriesMetadataDeduplicated', StudyInstanceUID);
       const aStudy = retrievedStudies[StudyInstanceUID];
       if (aStudy) {
         console.log('Already have study', aStudy);
@@ -400,7 +397,7 @@ function createDicomWebTreeApi(dicomWebConfig, UserAuthenticationService) {
       }
       try {
         // data is all SOPInstanceUIDs
-        console.time('Retrieve MetadataTree');
+        const startTime = performance.now();
         const data = await retrieveStudyMetadataTree(
           wadoDicomWebClient,
           StudyInstanceUID
@@ -412,9 +409,11 @@ function createDicomWebTreeApi(dicomWebConfig, UserAuthenticationService) {
           naturalizedInstancesMetadata.length,
           'instances'
         );
-        console.log('_retrieveSeriesMetadataDeduplicated',{ data, naturalizedInstancesMetadata});
         retrievedStudies[StudyInstanceUID] = naturalizedInstancesMetadata;
-        console.timeEnd('Retrieve MetadataTree');
+        performance.measure('healthlake:retrieve-metadatatree', {
+          start: startTime,
+          end: performance.now(),
+        });
         return naturalizedInstancesMetadata;
       } catch (e) {
         console.warn("Couldn't read metadata tree", e);
@@ -422,7 +421,7 @@ function createDicomWebTreeApi(dicomWebConfig, UserAuthenticationService) {
     },
 
     _registerMetadataTree: (StudyInstanceUID, tree) => {
-      console.time('Convert MetadataTree');
+      const startTime = performance.now();
       const seriesSummaryMetadata = {};
       const instancesPerSeries = {};
 
@@ -468,7 +467,11 @@ function createDicomWebTreeApi(dicomWebConfig, UserAuthenticationService) {
       Object.keys(instancesPerSeries).forEach(seriesUID =>
         DicomMetadataStore.addInstances(instancesPerSeries[seriesUID], false)
       );
-      console.timeEnd('Convert MetadataTree');
+      performance.measure('healthlake:convert-metadataTree', {
+            start: startTime,
+            end: performance.now(),
+        }
+      );
     },
 
     deleteStudyMetadataPromise: deleteStudyMetadataTreePromise,
