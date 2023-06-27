@@ -60,6 +60,8 @@ http://localhost:3000/viewers?StudyInstanceUIDs=$DICOMStudyUIDHere&ImageSetID=$I
 git clone git@github.com:RadicalImaging/OhiF-healthlake.git
 cd OhiF-healthlake
 yarn install
+# rebuild the plugin on every change
+yarn watch
 # start coding
 yarn test # to run unit tests
 ```
