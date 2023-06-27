@@ -1,5 +1,4 @@
 import getWADORSImageId from './getWADORSImageId';
-
 /**
  * Obtain an imageId for Cornerstone from an image instance
  *
