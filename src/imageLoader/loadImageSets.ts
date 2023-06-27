@@ -65,7 +65,7 @@ const loadImageSets = async (config, filters) => {
                     end: performance.now(),
                 }
             );
-            const json = imageSetsMetadataSummaries.map(map.bind(null, config.datastoreID));
+            const json = imageSetsMetadataSummaries.map(mapImageSetMetadataSummaryToDicomTags.bind(null, config.datastoreID));
             const uniq = reduceImageSetsByStudy(json);
             config.collections[json.ImageSetID] = uniq;
             return uniq;
@@ -75,7 +75,7 @@ const loadImageSets = async (config, filters) => {
     }
 }
 
-function reduceImageSetsByStudy(json) {
+export function reduceImageSetsByStudy(json) {
     return Object.values(json.reduce((cc, a) => {
         if (!cc[a['0020000D'].Value[0]]) {
             cc[a['0020000D'].Value[0]] = a;
@@ -86,7 +86,7 @@ function reduceImageSetsByStudy(json) {
     }, {}));
 }
 
-function map(datastoreId, item) {
+export function mapImageSetMetadataSummaryToDicomTags(datastoreId, item) {
     return {
         "00100020": {
         "vr": "PN",
