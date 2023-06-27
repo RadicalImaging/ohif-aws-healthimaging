@@ -118,12 +118,22 @@ function map(datastoreId, item) {
         },
         "00201208": {
             "vr": "IS",
-            "Value": ["1"]
+            "Value": [item.DICOMTags.DICOMNumberOfStudyRelatedInstances]
         },
         "00201206": {
             "vr": "IS",
             "Value": ["1"]
-        }
+        },
+        //StudyDate
+        "00080020": {
+            "vr": "DA",
+            "Value": [item.DICOMTags.DICOMStudyDate]
+        },
+        //StudyDescription
+        "00081030": {
+            "vr": "LO",
+            "Value": [item.DICOMTags.DICOMStudyDescription],
+        },
     };
 }
 
