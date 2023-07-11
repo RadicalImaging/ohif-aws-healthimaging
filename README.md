@@ -12,7 +12,7 @@
 * Start the HealthLake proxy to secure your access keys
 ```bash
 # AWS_HOST
-docker run -p 8089:8089 -e AWS_ACCESS_KEY_ID='YOUR_KEY' -e AWS_SECRET_ACCESS_KEY='YOUR_SECRET' -e AWS_REGION='YOUR_REGION' mateusfreira/ohif-healthlake-proxy
+docker run -p 8089:8089 -e AWS_ACCESS_KEY_ID='YOUR_KEY' -e AWS_SECRET_ACCESS_KEY='YOUR_SECRET' -e AWS_REGION='YOUR_REGION' flexview/ohif-healthlake-proxy
 ```
 * Add healthlake adapter as an OHIF plugin `platform/viewer/pluginConfig.json`
 ```json
