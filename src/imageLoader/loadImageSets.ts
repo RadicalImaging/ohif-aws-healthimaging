@@ -5,7 +5,7 @@ const ohifToAwsParam = {
 };
 
 async function getImageSets(datastoreId, config, awsFilter, _nextToken = '') {
-    const uri = `${config.endpoint}/runtime/datastore/${datastoreId}?maxResults=50&${_nextToken ? 'nextToken='+_nextToken : ''}`;
+    const uri = `${config.endpoint}/datastore/${datastoreId}/searchImageSets?maxResults=50&${_nextToken ? 'nextToken='+_nextToken : ''}`;
     const response = await getFetch(config)(uri, {
         method: 'POST',
         headers: { 

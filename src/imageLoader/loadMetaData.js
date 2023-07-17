@@ -1,9 +1,11 @@
 import { getFetch } from './getFetch';
 
 const loadMetaDataInternal = async (datastoreId, collectionId, config) => {
-    const uri = config.endpoint + '/runtime/datastore/' + datastoreId + '/imageset?imageSetId=' + collectionId
+    const uri = config.endpoint + '/datastore/' + datastoreId + '/imageSet/' + collectionId + '/getImageSetMetadata'
     const startTime = performance.now();
-    const response = await getFetch(config)(uri)
+    const response = await getFetch(config)(uri, {
+        method: 'POST',
+    })
     performance.measure(
         "healthlake-metadata-load", {
             start: startTime,
