@@ -6,11 +6,11 @@ const ohifToAwsParam = {
     AccessionNumber: 'DICOMAccessionNumber'
 };
 
-const isObjectEmpty = (obj: any) => {
+const isObjectEmpty = (obj) => {
     return Object.keys(obj).length === 0
 }
 
-const getBody = (awsFilter: any) => {
+const getBody = (awsFilter) => {
     if(isObjectEmpty(awsFilter)) {
         return {}
     } else {
