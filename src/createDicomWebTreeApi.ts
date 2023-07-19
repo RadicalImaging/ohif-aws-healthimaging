@@ -218,6 +218,7 @@ function createDicomWebTreeApi(dicomWebConfig, UserAuthenticationService) {
             const { SeriesInstanceUID } = instance;
             const aSeries = seriesUids[SeriesInstanceUID];
             if (aSeries) {
+              aSeries.numSeriesInstances++
               return;
             }
             seriesUids[SeriesInstanceUID] = {
@@ -226,7 +227,7 @@ function createDicomWebTreeApi(dicomWebConfig, UserAuthenticationService) {
               modality: instance.Modality,
               seriesNumber: instance.SeriesNumber,
               seriesDate: instance.SeriesDate,
-              numSeriesInstances: instance.NumberOfSeriesInstances,
+              numSeriesInstances: 1,
               description: instance.SeriesDescription,
             };
           });
