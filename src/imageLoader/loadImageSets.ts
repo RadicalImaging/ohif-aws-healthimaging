@@ -2,24 +2,40 @@ import { getFetch } from '../imageLoader/getFetch';
 
 const ohifToAwsParam = {
     StudyInstanceUID: 'DICOMStudyInstanceUID',
+    PatientID: 'DICOMPatientId',
+    AccessionNumber: 'DICOMAccessionNumber'
 };
+
+const isObjectEmpty = (obj: any) => {
+    return Object.keys(obj).length === 0
+}
+
+const getBody = (awsFilter: any) => {
+    if(isObjectEmpty(awsFilter)) {
+        return {}
+    } else {
+        return {
+            filters: [{
+                "operator": "EQUAL",
+                "values": [awsFilter]
+            }]
+        }
+    }
+}
 
 async function getImageSets(datastoreId, config, awsFilter, _nextToken = '') {
     const uri = `${config.endpoint}/datastore/${datastoreId}/searchImageSets?maxResults=50&${_nextToken ? 'nextToken='+_nextToken : ''}`;
+    
+    console.log('awsFilter=', awsFilter)
+    const body = getBody(awsFilter)
+    console.log(body)
+    
     const response = await getFetch(config)(uri, {
         method: 'POST',
         headers: { 
             "Content-type": "application/json" 
         },
-        body: JSON.stringify({
-            searchCriteria: {
-                filters: [{
-                    "operator": "EQUAL",
-                    "values": [awsFilter]
-
-                }]
-            }
-        })
+        body: JSON.stringify(body)
     })
     const {
         imageSetsMetadataSummaries,

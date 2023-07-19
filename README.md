@@ -69,6 +69,9 @@ yarn test # to run unit tests
 ## Description 
 Support metadata and imaging data loading from healthlake
 
+## Known Issues
+* StudyList does not support querying on the following fields: Patient Name, Study Date, Description, Modality
+
 ## FAQ
 ## Why do we need the proxy server?
 * You should never expose your AWS keys to the client. We created this tiny proxy with the only purpose of hiding the AWS keys in the backend.
