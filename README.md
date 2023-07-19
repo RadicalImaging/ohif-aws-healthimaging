@@ -1,4 +1,6 @@
-# OHIF healthlake adapter
+# OHIF AWS HealthImaging adapter
+
+Note - The official name for the service is "AWS HealthImaging".  Before GA it was called "Amazon HealthLake Imaging" and several references in the code and documentation still reference this old name.  These references will be updated shortly
 
 # Setting up
 
@@ -6,10 +8,10 @@
 * Node.js +14
 * OHIF follow the [Getting started guide if needed](https://v3-docs.ohif.org/development/getting-started/)
 * Make sure you are checkout in the branch `v3-stable`
-* Install health lake package:
+* Install ohif-healthlake package:
 * Create an access key in the AWS portal
-* Follow AWS documentation on how to create a medical imaging data source
-* Start the HealthLake proxy to secure your access keys
+* Follow AWS documentation on how to create an AWS Health Imaging Datastore and load it with DICOM data
+* Start the proxy to secure your access keys
 ```bash
 # AWS_HOST
 docker run -p 8089:8089 -e AWS_ACCESS_KEY_ID='YOUR_KEY' -e AWS_SECRET_ACCESS_KEY='YOUR_SECRET' -e AWS_REGION='YOUR_REGION' flexview/ohif-healthlake-proxy
@@ -31,7 +33,7 @@ platform/viewer/public/config/default.js
 ```js
   //...
   dataSources: [ {
-    friendlyName: 'HealthLake Data',
+    friendlyName: 'AWS HealthImaging',
     namespace: 'ohif-healthlake.dataSourcesModule.healthlake',
     sourceName: 'healthlake',
     configuration: {
@@ -57,8 +59,8 @@ http://localhost:3000/viewers?StudyInstanceUIDs=$DICOMStudyUIDHere&ImageSetID=$I
 
 # How to contribute
 ```bash
-git clone git@github.com:RadicalImaging/OhiF-healthlake.git
-cd OhiF-healthlake
+git clone git@github.com:RadicalImaging/ohif-aws-healthimaging.git
+cd ohif-aws-healthimaging
 yarn install
 # rebuild the plugin on every change
 yarn watch
@@ -67,7 +69,7 @@ yarn test # to run unit tests
 ```
 
 ## Description 
-Support metadata and imaging data loading from healthlake
+Support metadata and imaging data loading from AWS HealthImaging
 
 ## Known Issues
 * StudyList does not support querying on the following fields: Patient Name, Study Date, Description, Modality
@@ -79,7 +81,7 @@ Support metadata and imaging data loading from healthlake
 
 
 ## Authors 
-Bill Wallace, Mateus Freira, Radical Imaging 
+Bill Wallace, Mateus Freira, Radical Imaging, Chris Hafey
 
 ## License 
 MIT
