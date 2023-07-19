@@ -52,9 +52,14 @@ const initializeHealthlakeFetch = (healthlake) => {
         '/getImageFrame';
 
 
-      const signer = healthlake.awsAccessKeyID ? new AwsV4Signer({
+      const body = JSON.stringify({
+        "imageFrameId" : imageFrameId
+      })
+
+      const signer = healthlake.integrationMode === 'LocalStorage' ? new AwsV4Signer({
         ...awsCredentials(healthlake),
         url: uri,
+        body
       }) : null;
 
 
@@ -71,12 +76,10 @@ const initializeHealthlakeFetch = (healthlake) => {
           signer.sign().then(({headers}) => {
             xhr.setRequestHeader('x-amz-date', headers.get('x-amz-date'));
             xhr.setRequestHeader('Authorization', headers.get('Authorization'));
-            xhr.wasSend();
+            xhr.wasSend(body);
           });
         } else {
-          xhr.wasSend(JSON.stringify({
-            "imageFrameId" : imageFrameId
-          }));
+          xhr.wasSend(body);
         }
       }
     },
@@ -106,6 +109,11 @@ function createDicomWebTreeApi(dicomWebConfig, UserAuthenticationService) {
     singlepart,
     healthlake,
   } = dicomWebConfig;
+
+  if(healthlake.integrationMode === 'LocalStorage') {
+    healthlake.datastoreID = window.localStorage.getItem('datastoreId')
+    healthlake.endpoint = window.localStorage.getItem('endpoint')
+  }
 
   const qidoConfig = {
     url: qidoRoot,
@@ -159,28 +167,7 @@ function createDicomWebTreeApi(dicomWebConfig, UserAuthenticationService) {
               supportsFuzzyMatching,
               supportsWildcard,
             }) || {};
-          if (window.healthlake && window.healthlake.ImageSetID) {
-            // Todo implement image set id search
-            const { ImageSetID, datastoreID } = window.healthlake;
-            const tree = await implementation._retrieveSeriesMetadataDeduplicated(
-              ImageSetID
-            );
-            const instance = tree[0];
-            return [
-              {
-                studyInstanceUid: instance.StudyInstanceUID,
-                date: instance.StudyDate, // YYYYMMDD
-                time: instance.StudyTime, // HHmmss.SSS (24-hour, minutes, seconds, fractional seconds)
-                accession: instance.AccessionNumber || '', // short string, probably a number?
-                mrn: instance.PatientID || '', // medicalRecordNumber
-                patientName: instance.PatientName || '',
-                instances: tree.length || 0, // number
-                description: instance.StudyDescription || '',
-                modalities: instance.Modality || '',
-              },
-            ];
-          }
-
+         
           const results = await qidoSearch(
             qidoDicomWebClient,
             undefined,

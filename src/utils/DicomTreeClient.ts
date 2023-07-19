@@ -53,7 +53,6 @@ export default class DicomTreeClient extends api.DICOMwebClient {
             tree: true,
             images: true,
             collections: {},
-            ...window.healthlake,
             ...qidoConfig.healthlake,
         };
     }
