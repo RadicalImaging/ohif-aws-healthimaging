@@ -49,7 +49,7 @@ export default class DicomTreeClient extends api.DICOMwebClient {
         } = qidoConfig;
         this.healthlake = {
             region: 'us-east-1',
-            endpoint: 'https://medical-imaging.us-east-1.amazonaws.com',
+            endpoint: 'https://runtime-medical-imaging.us-east-1.amazonaws.com',
             tree: true,
             images: true,
             collections: {},

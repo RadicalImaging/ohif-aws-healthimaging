@@ -52,9 +52,16 @@ const initializeHealthlakeFetch = (healthlake) => {
         '/getImageFrame';
 
 
+      const body = JSON.stringify({
+        "imageFrameId" : imageFrameId
+      });
+
       const signer = healthlake.awsAccessKeyID ? new AwsV4Signer({
         ...awsCredentials(healthlake),
+        service: 'medical-imaging',
         url: uri,
+        method: 'POST',
+        body,
       }) : null;
 
 
@@ -71,12 +78,10 @@ const initializeHealthlakeFetch = (healthlake) => {
           signer.sign().then(({headers}) => {
             xhr.setRequestHeader('x-amz-date', headers.get('x-amz-date'));
             xhr.setRequestHeader('Authorization', headers.get('Authorization'));
-            xhr.wasSend();
+            xhr.wasSend(body);
           });
         } else {
-          xhr.wasSend(JSON.stringify({
-            "imageFrameId" : imageFrameId
-          }));
+          xhr.wasSend(body);
         }
       }
     },
