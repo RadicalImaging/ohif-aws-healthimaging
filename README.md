@@ -8,20 +8,20 @@ Note - The official name for the service is "AWS HealthImaging".  Before GA it w
 * Node.js +14
 * OHIF follow the [Getting started guide if needed](https://v3-docs.ohif.org/development/getting-started/)
 * Make sure you are checkout in the branch `v3-stable`
-* Install ohif-healthlake package:
+* Install ohif-aws-healthimaging package:
 * Create an access key in the AWS portal
 * Follow AWS documentation on how to create an AWS Health Imaging Datastore and load it with DICOM data
 * Start the proxy to secure your access keys
 ```bash
 # AWS_HOST
-docker run -p 8089:8089 -e AWS_ACCESS_KEY_ID='YOUR_KEY' -e AWS_SECRET_ACCESS_KEY='YOUR_SECRET' -e AWS_REGION='YOUR_REGION' flexview/ohif-healthlake-proxy
+docker run -p 8089:8089 -e AWS_ACCESS_KEY_ID='YOUR_KEY' -e AWS_SECRET_ACCESS_KEY='YOUR_SECRET' -e AWS_REGION='YOUR_REGION' flexview/ohif-aws-healthimaging-proxy
 ```
 * Add healthlake adapter as an OHIF plugin `platform/viewer/pluginConfig.json`
 ```json
   "extensions": [
     //....
     {
-      "packageName": "ohif-healthlake",
+      "packageName": "ohif-aws-healthimaging",
       "version": "0.0.12"
     }
   ],
@@ -34,7 +34,7 @@ platform/viewer/public/config/default.js
   //...
   dataSources: [ {
     friendlyName: 'AWS HealthImaging',
-    namespace: 'ohif-healthlake.dataSourcesModule.healthlake',
+    namespace: 'ohif-aws-healthimaging.dataSourcesModule.healthlake',
     sourceName: 'healthlake',
     configuration: {
       name: 'healthlake',
