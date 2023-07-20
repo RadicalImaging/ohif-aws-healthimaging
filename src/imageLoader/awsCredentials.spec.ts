@@ -22,7 +22,8 @@ describe('awsCredentials', () => {
 
     expect(result).toEqual({
       secretAccessKey: healthlake.awsSecretAccessKey,
-      accessKeyId: healthlake.awsAccessKeyID
+      accessKeyId: healthlake.awsAccessKeyID,
+      service: "medical-imaging"
     });
   });
 
@@ -31,7 +32,8 @@ describe('awsCredentials', () => {
 
     expect(result).toEqual({
       secretAccessKey: config.awsSecretAccessKey,
-      accessKeyId: config.awsAccessKeyID
+      accessKeyId: config.awsAccessKeyID,
+      service: "medical-imaging"
     });
   });
 
@@ -46,7 +48,8 @@ describe('awsCredentials', () => {
 
     expect(result).toEqual({
       secretAccessKey: healthlake.awsSecretAccessKey,
-      accessKeyId: healthlake.awsAccessKeyID
+      accessKeyId: healthlake.awsAccessKeyID,
+      service: "medical-imaging"
     });
   });
 });
