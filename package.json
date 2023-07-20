@@ -1,15 +1,15 @@
 {
-  "name": "ohif-healthlake",
-  "version": "0.4.0",
+  "name": "ohif-aws-healthimaging",
+  "version": "0.6.2",
   "description": "Support reading tree structured metadata",
   "author": "Bill Wallace, Mateus Freira,Radical Imaging",
   "license": "MIT",
-  "main": "dist/umd/ohif-healthlake/index.umd.js",
+  "main": "dist/umd/ohif-aws-healthimaging/index.umd.js",
   "files": [
     "dist/**",
     "README.md"
   ],
-  "repository": "RadicalImaging/ohif-healthlake",
+  "repository": "RadicalImaging/ohif-aws-healthimaging",
   "keywords": [
     "ohif-extension"
   ],

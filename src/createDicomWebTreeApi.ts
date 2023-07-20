@@ -45,12 +45,11 @@ const initializeHealthlakeFetch = (healthlake) => {
       const imageFrameId = urlParams.get('frameID');
       const uri =
         healthlake.endpoint +
-        '/runtime/datastore/' +
+        '/datastore/' +
         datastoreId +
-        '/imageset/' +
+        '/imageSet/' +
         collectionId +
-        '/imageframe/' +
-        imageFrameId;
+        '/getImageFrame';
 
 
       const signer = healthlake.awsAccessKeyID ? new AwsV4Signer({
@@ -59,7 +58,7 @@ const initializeHealthlakeFetch = (healthlake) => {
       }) : null;
 
 
-      xhr.open('GET', uri, true);
+      xhr.open('POST', uri, true);
       xhr.wasGetResponseHeader = xhr.getResponseHeader;
       xhr.getResponseHeader = function (key: string) {
         if (key == 'Content-Type') return 'image/jphc';
@@ -75,7 +74,9 @@ const initializeHealthlakeFetch = (healthlake) => {
             xhr.wasSend();
           });
         } else {
-          xhr.wasSend();
+          xhr.wasSend(JSON.stringify({
+            "imageFrameId" : imageFrameId
+          }));
         }
       }
     },
