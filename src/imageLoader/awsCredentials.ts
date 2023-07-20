@@ -10,6 +10,7 @@ const awsCredentials = (config) => {
   const credentials = {
     secretAccessKey: healthlake?.awsSecretAccessKey || config.awsSecretAccessKey,
     accessKeyId: healthlake?.awsAccessKeyID || config.awsAccessKeyID,
+    service: "medical-imaging"
   };
 
   return credentials
