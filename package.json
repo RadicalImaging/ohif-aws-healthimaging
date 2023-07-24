@@ -1,6 +1,6 @@
 {
   "name": "ohif-aws-healthimaging",
-  "version": "0.6.4",
+  "version": "0.6.5",
   "description": "Support reading tree structured metadata",
   "author": "Bill Wallace, Mateus Freira,Radical Imaging",
   "license": "MIT",
@@ -30,7 +30,7 @@
   "scripts": {
     "dev": "cross-env NODE_ENV=development webpack --config .webpack/webpack.dev.js --watch --debug --output-pathinfo",
     "dev:dicom-pdf": "yarn run dev",
-    "build": "cross-env NODE_ENV=production webpack --config .webpack/webpack.prod.js",
+    "build": "NODE_ENV=production webpack --config .webpack/webpack.prod.js",
     "build:package": "yarn run build",
     "start": "yarn run dev",
     "test": "jest",
