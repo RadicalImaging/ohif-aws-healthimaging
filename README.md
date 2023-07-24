@@ -16,23 +16,23 @@ Note - The official name for the service is "AWS HealthImaging".  Before GA it w
 # AWS_HOST
 docker run -p 8089:8089 -e AWS_ACCESS_KEY_ID='YOUR_KEY' -e AWS_SECRET_ACCESS_KEY='YOUR_SECRET' -e AWS_REGION='YOUR_REGION' flexview/ohif-aws-healthimaging-proxy
 ```
-* Add healthlake adapter as an OHIF plugin `platform/viewer/pluginConfig.json`
+* Add healthimaging as a dependency `yarn add  ohif-aws-healthimaging --ignore-workspace-root-check`
+* Add healthimaging adapter as an OHIF plugin `platform/viewer/pluginConfig.json`
 ```json
   "extensions": [
     //....
     {
-      "packageName": "ohif-aws-healthimaging",
-      "version": "0.0.12"
+      "packageName": "ohif-aws-healthimaging"
     }
   ],
 
 ```
-* Configure the data source to access healthlake via the proxy
+* Configure the data source to access healthimaging via the proxy
 
-platform/viewer/public/config/default.js
+platform/app/public/config/default.js
 ```js
   //...
-  dataSources: [ {
+  dataSources: [{
     friendlyName: 'AWS HealthImaging',
     namespace: 'ohif-aws-healthimaging.dataSourcesModule.healthlake',
     sourceName: 'healthlake',

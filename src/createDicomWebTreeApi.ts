@@ -43,6 +43,10 @@ const initializeHealthlakeFetch = (healthlake) => {
       const datastoreId = urlParams.get('DatastoreID');
       const collectionId = urlParams.get('ImageSetID');
       const imageFrameId = urlParams.get('frameID');
+      const isAwsHealthImagingRequest = urlParams.get('healthlake');
+      if(!isAwsHealthImagingRequest) {
+        return xhr.open('get', url, true);
+      }
       const uri =
         healthlake.endpoint +
         '/datastore/' +
@@ -528,6 +532,22 @@ function createDicomWebTreeApi(dicomWebConfig, UserAuthenticationService) {
         extraParameters,
       });
       return imageIds;
+    },
+    getStudyInstanceUIDs({ params, query }: { params: any; query: any}) {
+      const { StudyInstanceUIDs: paramsStudyInstanceUIDs } = params;
+      const queryStudyInstanceUIDs = utils.splitComma(
+        query.getAll('StudyInstanceUIDs')
+      );
+
+      const StudyInstanceUIDs =
+        (queryStudyInstanceUIDs.length && queryStudyInstanceUIDs) ||
+        paramsStudyInstanceUIDs;
+      const StudyInstanceUIDsAsArray =
+        StudyInstanceUIDs && Array.isArray(StudyInstanceUIDs)
+          ? StudyInstanceUIDs
+          : [StudyInstanceUIDs];
+
+      return StudyInstanceUIDsAsArray;
     },
   };
 
