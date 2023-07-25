@@ -7,20 +7,23 @@ Note - The official name for the service is "AWS HealthImaging".  Before GA it w
 ## Prerequisites
 * Node.js +14
 * OHIF follow the [Getting started guide if needed](https://v3-docs.ohif.org/development/getting-started/)
-* Make sure you are checkout in the branch `v3-stable`
-* Install ohif-healthlake package to OHIF by adding the following JSON to the 'extensions' array in platform/viewer/pluginConfig.json
+* Make sure you are in the OHIF branch `v3-stable`
+  > git checkout -b v3-stable
+* Add the ohif-healthlake package to OHIF by adding the following JSON to the 'extensions' array in platform/viewer/pluginConfig.json
 ```json
 {
   "packageName": "ohif-healthlake",
   "version": "0.0.12"
 }
 ```
-* Create an access key in the AWS portal
-* Follow AWS documentation on how to create an AWS Health Imaging Datastore and load it with DICOM data
+* Create a symbolic link from OHIF extensions to this directory
+  > ln -s ~/src/ohif-healthlake ~/src/viewers/extensions
+* Follow AWS documentation on how to create an AWS HealthImaging Datastore and load it with DICOM data
+* Create an access key in the AWS portal with access to at least the following AHI APIs on the created datastore: SearchImageSets, GetImageSetMetadata, GetImageFrame
 
-## Configuring OHIF to talk to AHI directly
+## Configuring LocalStorage Integration Mode
 
-This approach is the fastest and lowest cost but requires that you use IAM Authentication
+This approach simplifies demos and development but requires that you store AWS secrets in browser local storage.  
 
 * Configure the data source 
 
@@ -72,9 +75,10 @@ http://localhost:3000/viewers
 
 You should now see the study list
 
-## Configuring OHIF to talk to AHI through a proxy
+## Configuring Proxy Integration Mode
 
-This approach can be used if you need to use non IAM based authentication (e.g. openid, jwt, etc)
+This approach uses a proxy which can be deployed locally for testing or in AWS for production (e.g. ECS, EKS).  The proxy enables non IAM authentication mechanisms (e.g. JWT, OpenID)
+for easier integration with exisiting applications.
 
 * Start the proxy to secure your access keys
 ```bash
@@ -122,6 +126,32 @@ yarn start # in the OHIF platform/viewer folder
 ```
 http://localhost:3000/viewers?StudyInstanceUIDs=$DICOMStudyUIDHere&ImageSetID=$ImageSetIDHere
 ```
+
+## Deploying your build to AWS CloudFront
+* [Build OHIF](https://docs.ohif.org/deployment/build-for-production/)
+* Create an S3 bucket and upload the OHIF build output (from Viewers/app/dist)
+  * Do not enable "Static website hosting"
+  * Do not disable "Block Public Access"
+* Create a CloudFront distribution for the bucket
+  * Set Origin Access to "Origin Access Control"
+  * Add a behavior with the following properties
+    * Create Response header policy with the following headers
+      * Cross-Origin-Opener-Policy : same-origin
+      * Cache-Control : no-cache
+      * Cross-Origin-Embedder-Policy : require-corp
+  * Add an error page response 
+    * HTTP error code: 403
+    * Response page path:  /index.html 
+    * HTTP response code: 200:OK and returns 200:OK 
+* Create bucket policy that grants read access to your CloudFront distribution: [Giving the origin access control permission to access the S3 bucket](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/private-content-restricting-access-to-s3.html)
+
+# TODO
+* Add CDK for creating s3 bucket/cloudfront distribution
+* Add integration mode that supports [temporary security credentials](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_temp_request.html)
+* Add configuration page for LocalStorage integration mode
+* Refactor code
+* Add more unit tests
+* Extend proxy server with some form of non IAM authentication (OpenID or JWT based)
 
 # How to contribute
 ```bash
