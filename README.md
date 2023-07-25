@@ -8,9 +8,74 @@ Note - The official name for the service is "AWS HealthImaging".  Before GA it w
 * Node.js +14
 * OHIF follow the [Getting started guide if needed](https://v3-docs.ohif.org/development/getting-started/)
 * Make sure you are checkout in the branch `v3-stable`
-* Install ohif-healthlake package:
+* Install ohif-healthlake package to OHIF by adding the following JSON to the 'extensions' array in platform/viewer/pluginConfig.json
+```json
+{
+  "packageName": "ohif-healthlake",
+  "version": "0.0.12"
+}
+```
 * Create an access key in the AWS portal
 * Follow AWS documentation on how to create an AWS Health Imaging Datastore and load it with DICOM data
+
+## Configuring OHIF to talk to AHI directly
+
+This approach is the fastest and lowest cost but requires that you use IAM Authentication
+
+* Configure the data source 
+
+platform/viewer/public/config/default.js
+```js
+  dataSources: [
+    {
+      friendlyName: 'AWS HealthImaging',
+      namespace: 'ohif-healthlake.dataSourcesModule.healthlake',
+      sourceName: 'healthlake',
+      configuration: {
+        name: 'AWS HealthImaging Demo',
+        healthlake: {
+          integrationMode: 'LocalStorage',
+        },
+        singlepart: "image/jphc",
+      }
+    },
+
+  ],
+  defaultDataSourceName: 'healthlake',
+```
+
+* Run OHIF
+```bash
+yarn start # in the OHIF platform/viewer folder
+```
+
+* Open the viewer.  NOTE - this should show an error message, that is expected
+```
+http://localhost:3000/viewers
+```
+
+* Configure parameters in browser local storage
+
+  * Go to the browser debug window
+    * Firefox - 3 bar menu->More Tools->Web Developer Tools
+    * Chrome - 3 dot menu->More Tools->Developer Tools
+  *. Go to local storage configuraiton
+    * Firefox - Storage tab->local storage->https://localhost:3000
+    * Chrome - Application tab->Local Storage->https://localhost:3000
+  * Create the following keys with the appropriate values.  Note that keys are CASE SENSITIVE
+    * "accessKeyID" -> AWS Access key for a user that has read access to AHI
+    * "secretAccessKey" -> AWS Secret Access Key for a user that has read access to AHI
+    * "datastoreId" - the datastore id you loaded DICOM data into
+    * "endpoint" - the endpoint for AHI (e.g. https://runtime-medical-imaging.us-east-1.amazonaws.com)  NOTE - make sure you put the correct region the datastore resides in
+
+* Refresh the browser tab
+
+You should now see the study list
+
+## Configuring OHIF to talk to AHI through a proxy
+
+This approach can be used if you need to use non IAM based authentication (e.g. openid, jwt, etc)
+
 * Start the proxy to secure your access keys
 ```bash
 # AWS_HOST
@@ -46,6 +111,7 @@ platform/viewer/public/config/default.js
     }
   }
   ],
+  defaultDataSourceName: 'healthlake',
 
 ```
 * Run OHIF
