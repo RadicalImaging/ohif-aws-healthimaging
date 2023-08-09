@@ -4,6 +4,7 @@ import {
 import loadMetaDataInternal from '../imageLoader/loadMetaData';
 import loadImageSets from '../imageLoader/loadImageSets';
 
+
 export type HealthLake = {
     collections: Record < string,
     unknown > ;
@@ -12,6 +13,7 @@ export type HealthLake = {
     datastoreID ? : string;
     region ? : string;
     endpoint ? : string;
+    groupSeriesBy: string;
 };
 
 /**
@@ -48,6 +50,7 @@ export default class DicomTreeClient extends api.DICOMwebClient {
             healthlake
         } = qidoConfig;
         this.healthlake = {
+            groupSeriesBy: 'seriesNumber',
             region: 'us-east-1',
             endpoint: 'https://runtime-medical-imaging.us-east-1.amazonaws.com',
             tree: true,
@@ -127,12 +130,14 @@ export default class DicomTreeClient extends api.DICOMwebClient {
             datastoreID = this.healthlake?.datastoreID,
         } = options;
         if (this.healthlake) {
+            console.log('searching for studies');
             const studies = await this.searchForStudies({
                 ...options,
                 queryParams: {
                     StudyInstanceUID: studyInstanceUID
                 },
             });
+            console.log(`Found ${studies.length}`,studies);
             if (studies && studies.length) {
                 const [study] = studies;
                 datastoreID = study['00181002']?.Value?.[0] || datastoreID;
@@ -142,7 +147,8 @@ export default class DicomTreeClient extends api.DICOMwebClient {
                     const metadataLoaded = await loadMetaDataInternal(datastoreID, imageSetId, this.healthlake);
                     return enrichImageSetMetadataWithImageSetId(metadataLoaded, imageSetId);
                 }));
-                const finalMetadata = reduceMetadata(metadataArray);
+                const finalMetadata = reduceMetadata(metadataArray, this.healthlake);
+                console.log({ finalMetadata });
                 return finalMetadata;
             }
         }
@@ -227,15 +233,11 @@ export default class DicomTreeClient extends api.DICOMwebClient {
         return this.compareValues(testValue, value) && true;
     }
 }
-function reduceMetadata(metadataArray: any[]) {
+function reduceMetadata(metadataArray: any[], config: HealthLake) {
     const series = metadataArray.map((cur) => Object.values(cur.Study.Series)).flat();
-    const seriesBySerieId = series.reduce((acc, cur) => {
-        if (!acc[cur.DICOM.SeriesInstanceUID]) {
-            acc[cur.DICOM.SeriesInstanceUID] = [];
-        }
-        acc[cur.DICOM.SeriesInstanceUID].push(cur);
-        return acc;
-    }, {});
+
+    const seriesBySerieId = reduceSeries(series, config);
+
     Object.keys(seriesBySerieId).forEach(key => {
         const series = seriesBySerieId[key];
         seriesBySerieId[key] = seriesBySerieId[key][0];
@@ -246,6 +248,18 @@ function reduceMetadata(metadataArray: any[]) {
     const finalMetadata = metadataArray[0];
     finalMetadata.Study.Series = seriesBySerieId;
     return finalMetadata;
+}
+
+function reduceSeries(series: any[], config: { groupSeriesBy: string; }) {
+    const groupSeriesBy = config.groupSeriesBy || 'SeriesNumber';
+    return series.reduce((acc, cur) => {
+        const currentSerieGroupValue = cur.DICOM[groupSeriesBy];
+        if (!acc[currentSerieGroupValue]) {
+            acc[currentSerieGroupValue] = [];
+        }
+        acc[currentSerieGroupValue].push(cur);
+        return acc;
+    }, {});
 }
 
 function enrichImageSetMetadataWithImageSetId(metadataLoaded: any, imageSetId: String) {
