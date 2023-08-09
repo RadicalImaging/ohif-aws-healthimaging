@@ -71,6 +71,11 @@ yarn test # to run unit tests
 ## Description 
 Support metadata and imaging data loading from AWS HealthImaging
 
+## Advance config option
+```javascript
+.dataSources[].groupSeriesBy // Change the field used to grup series by, the default value is `seriesNumber`. Ps grouping by SeriesInstanceUID will result into one series per Image Set
+```
+
 ## Known Issues
 * StudyList does not support querying on the following fields: Patient Name, Study Date, Description, Modality
 

@@ -130,14 +130,12 @@ export default class DicomTreeClient extends api.DICOMwebClient {
             datastoreID = this.healthlake?.datastoreID,
         } = options;
         if (this.healthlake) {
-            console.log('searching for studies');
             const studies = await this.searchForStudies({
                 ...options,
                 queryParams: {
                     StudyInstanceUID: studyInstanceUID
                 },
             });
-            console.log(`Found ${studies.length}`,studies);
             if (studies && studies.length) {
                 const [study] = studies;
                 datastoreID = study['00181002']?.Value?.[0] || datastoreID;
@@ -148,7 +146,6 @@ export default class DicomTreeClient extends api.DICOMwebClient {
                     return enrichImageSetMetadataWithImageSetId(metadataLoaded, imageSetId);
                 }));
                 const finalMetadata = reduceMetadata(metadataArray, this.healthlake);
-                console.log({ finalMetadata });
                 return finalMetadata;
             }
         }
