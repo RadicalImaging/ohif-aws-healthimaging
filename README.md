@@ -129,7 +129,7 @@ http://localhost:3000/viewers?StudyInstanceUIDs=$DICOMStudyUIDHere&ImageSetID=$I
 
 ## Deploying your build to AWS CloudFront
 * [Build OHIF](https://docs.ohif.org/deployment/build-for-production/)
-* Create an S3 bucket and upload the OHIF build output (from Viewers/app/dist)
+* Create an S3 bucket and upload the OHIF build output (from Viewers/platform/viewer/dist)
   * Do not enable "Static website hosting"
   * Do not disable "Block Public Access"
 * Create a CloudFront distribution for the bucket
