@@ -49,7 +49,7 @@ function processResults(qidoStudies) {
     let patientName = ''
     console.log('qidoStudyName=', qidoStudyName)
     if(qidoStudyName.Value && qidoStudyName.Value.length && qidoStudyName.Value[0]) {
-      qidoStudyName = utils.formatPN(getName(qidoStudyName), '') 
+      patientName = utils.formatPN(getName(qidoStudyName), '') 
     }
     console.log('patientName=', patientName)
 
