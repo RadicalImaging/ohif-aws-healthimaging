@@ -23,9 +23,9 @@ Note - The official name for the service is "AWS HealthImaging".  Before GA it w
 
 ## Configuring LocalStorage Integration Mode
 
-This approach simplifies demos and development but requires that you store AWS secrets in browser local storage.  
+This approach simplifies demos and development but requires that you store AWS secrets in browser local storage.
 
-* Configure the data source 
+* Configure the data source
 
 platform/viewer/public/config/default.js
 ```js
@@ -39,7 +39,7 @@ platform/viewer/public/config/default.js
         healthlake: {
           integrationMode: 'LocalStorage',
         },
-        singlepart: "image/jphc",
+        singlepart: 'image/jphc',
       }
     },
 
@@ -139,10 +139,10 @@ http://localhost:3000/viewers?StudyInstanceUIDs=$DICOMStudyUIDHere&ImageSetID=$I
       * Cross-Origin-Opener-Policy : same-origin
       * Cache-Control : no-cache
       * Cross-Origin-Embedder-Policy : require-corp
-  * Add an error page response 
+  * Add an error page response
     * HTTP error code: 403
-    * Response page path:  /index.html 
-    * HTTP response code: 200:OK and returns 200:OK 
+    * Response page path:  /index.html
+    * HTTP response code: 200:OK and returns 200:OK
 * Create bucket policy that grants read access to your CloudFront distribution: [Giving the origin access control permission to access the S3 bucket](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/private-content-restricting-access-to-s3.html)
 
 # TODO
@@ -164,7 +164,7 @@ yarn watch
 yarn test # to run unit tests
 ```
 
-## Description 
+## Description
 Support metadata and imaging data loading from AWS HealthImaging
 
 ## Known Issues
@@ -176,9 +176,8 @@ Support metadata and imaging data loading from AWS HealthImaging
 * The Proxy server available here is meant to be for development only. In actual use cases, we encourage you to implement authentication on top of the proxy so you secure access to your data.
 
 
-## Authors 
+## Authors
 Bill Wallace, Mateus Freira, Radical Imaging, Chris Hafey
 
-## License 
+## License
 MIT
-
