@@ -43,14 +43,23 @@ function processResults(qidoStudies) {
 
   const studies = [];
 
-  qidoStudies.forEach(qidoStudy =>
+  qidoStudies.forEach(qidoStudy => {
+
+    let qidoStudyName =qidoStudy['00100010']
+    let patientName = ''
+    console.log('qidoStudyName=', qidoStudyName)
+    if(qidoStudyName.Value && qidoStudyName.Value.length && qidoStudyName.Value[0]) {
+      qidoStudyName = utils.formatPN(getName(qidoStudyName), '') 
+    }
+    console.log('patientName=', patientName)
+
     studies.push({
       studyInstanceUid: getString(qidoStudy['0020000D']),
       date: getString(qidoStudy['00080020']), // YYYYMMDD
       time: getString(qidoStudy['00080030']), // HHmmss.SSS (24-hour, minutes, seconds, fractional seconds)
       accession: getString(qidoStudy['00080050']) || '', // short string, probably a number?
       mrn: getString(qidoStudy['00100020']) || '', // medicalRecordNumber
-      patientName: utils.formatPN(getName(qidoStudy['00100010'])) || '',
+      patientName: patientName,
       instances: Number(getString(qidoStudy['00201208'])) || 0, // number
       ImageSetID: getString(qidoStudy['00200010']),
       description: getString(qidoStudy['00081030']) || '',
@@ -59,6 +68,7 @@ function processResults(qidoStudies) {
           getModalities(qidoStudy['00080060'], qidoStudy['00080061'])
         ) || '',
     })
+  }
   );
 
   return studies;
