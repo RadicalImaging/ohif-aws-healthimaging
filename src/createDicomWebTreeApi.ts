@@ -474,7 +474,7 @@ function createDicomWebTreeApi(dicomWebConfig, UserAuthenticationService) {
       }
 
       displaySet.images.forEach(instance => {
-        const NumberOfFrames = instance.NumberOfFrames;
+        const NumberOfFrames = instance.NumberOfFrames ? parseInt(instance.NumberOfFrames) : 0;
         if (NumberOfFrames > 1) {
           for (let i = 0; i < NumberOfFrames; i++) {
             const imageId = this.getImageIdsForInstance({
@@ -492,9 +492,9 @@ function createDicomWebTreeApi(dicomWebConfig, UserAuthenticationService) {
       return imageIds;
     },
 
-    getImageIdsForInstance({ instance, frame = 1 }) {
+    getImageIdsForInstance({ instance, frame = 0 }) {
       const { DatastoreID, ImageFrames, ImageSetID } = instance;
-      const frameID = ImageFrames?.[frame - 1]?.ID;
+      const frameID = ImageFrames?.[frame]?.ID;
       const healthlakeParam = qidoDicomWebClient.healthlake?.images ? "true" : "false";
       const extraParameters =
         (DatastoreID && {

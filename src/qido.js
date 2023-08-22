@@ -47,12 +47,11 @@ function processResults(qidoStudies) {
 
     let qidoStudyName =qidoStudy['00100010']
     let patientName = ''
-    console.log('qidoStudyName=', qidoStudyName)
     if(qidoStudyName.Value && qidoStudyName.Value.length && qidoStudyName.Value[0]) {
       patientName = utils.formatPN(getName(qidoStudyName), '') 
     }
-    console.log('patientName=', patientName)
 
+    const numInstances = Number(getString(qidoStudy['00201208'])) || 0 // number
     studies.push({
       studyInstanceUid: getString(qidoStudy['0020000D']),
       date: getString(qidoStudy['00080020']), // YYYYMMDD
@@ -60,7 +59,7 @@ function processResults(qidoStudies) {
       accession: getString(qidoStudy['00080050']) || '', // short string, probably a number?
       mrn: getString(qidoStudy['00100020']) || '', // medicalRecordNumber
       patientName: patientName,
-      instances: Number(getString(qidoStudy['00201208'])) || 0, // number
+      instances: numInstances, // number
       ImageSetID: getString(qidoStudy['00200010']),
       description: getString(qidoStudy['00081030']) || '',
       modalities:

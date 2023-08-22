@@ -25,8 +25,6 @@ const getBody = (awsFilter) => {
 
 async function getImageSets(datastoreId, config, awsFilter, _nextToken = '') {
 
-    console.log('awsFilter=', awsFilter)
-
     let imageSetSummaries : any[] = []
     const maxImageSetsToReturn = 300
     do {
@@ -47,8 +45,6 @@ async function getImageSets(datastoreId, config, awsFilter, _nextToken = '') {
             nextToken
         } = await response.json();
         
-        console.log('imageSetsMetadataSummaries', imageSetsMetadataSummaries)
-
         imageSetSummaries = imageSetSummaries.concat(imageSetsMetadataSummaries)
         _nextToken = nextToken
 
@@ -117,22 +113,40 @@ export function reduceImageSetsByStudy(json) {
 
 export function mapImageSetMetadataSummaryToDicomTags(datastoreId, item) {
     return {
-        "00100020": {
-        "vr": "PN",
-        "Value": [item.DICOMTags.DICOMPatientId]
-        },
-        "00100010": {
-            "vr": "PN",
-            "Value": [item.DICOMTags.DICOMPatientName]
-        },
-        "00080050": {
-            "vr": "SH",
-            "Value": [item.DICOMTags.DICOMAccessionNumber]
-        },
-        "0020000D": {
+        "0020000D": { // studyInstanceUid
             "vr": "UI",
             "Value": [item.DICOMTags.DICOMStudyInstanceUID]
         },
+        "00080020": { // date
+            "vr": "DA",
+            "Value": [item.DICOMTags.DICOMStudyDate]
+        },
+        "00080050": { // accession
+            "vr": "SH",
+            "Value": [item.DICOMTags.DICOMAccessionNumber]
+        },
+        "00100020": { // mrn
+            "vr": "PN",
+            "Value": [item.DICOMTags.DICOMPatientId]
+        },
+        "00100010": { // patientName
+            "vr": "PN",
+            "Value": [item.DICOMTags.DICOMPatientName]
+        },
+        "00201208": { // instances
+            "vr": "IS",
+            "Value": [item.DICOMTags.DICOMNumberOfStudyRelatedInstances]
+        },
+        "00081030": { // description
+            "vr": "LO",
+            "Value": [item.DICOMTags.DICOMStudyDescription],
+        },
+        "00080061": { // modalities
+            "vr": "CS",
+            "Value": [""]
+        },
+        
+        // AHI specific
         "00200010": {
             "vr": "SH",
             "Value": [item.imageSetId]
@@ -140,28 +154,6 @@ export function mapImageSetMetadataSummaryToDicomTags(datastoreId, item) {
         "00181002": {
             "vr": "UI",
             "Value": [datastoreId]
-        },
-        "00080061": {
-            "vr": "CS",
-            "Value": [""]
-        },
-        "00201208": {
-            "vr": "IS",
-            "Value": [item.DICOMTags.DICOMNumberOfStudyRelatedInstances]
-        },
-        "00201206": {
-            "vr": "IS",
-            "Value": ["1"]
-        },
-        //StudyDate
-        "00080020": {
-            "vr": "DA",
-            "Value": [item.DICOMTags.DICOMStudyDate]
-        },
-        //StudyDescription
-        "00081030": {
-            "vr": "LO",
-            "Value": [item.DICOMTags.DICOMStudyDescription],
         },
     };
 }
