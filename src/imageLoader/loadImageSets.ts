@@ -49,7 +49,6 @@ async function getImageSets(datastoreId, config, awsFilter, _nextToken = '') {
         _nextToken = nextToken
 
     } while (imageSetSummaries.length < maxImageSetsToReturn && _nextToken) 
-    console.log('imageSetSummaries=', imageSetSummaries)
     return imageSetSummaries;
 }
 

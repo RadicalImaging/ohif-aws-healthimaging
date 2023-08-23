@@ -7,8 +7,8 @@ Note - The official name for the service is "AWS HealthImaging".  Before GA it w
 ## Prerequisites
 * Node.js +14
 * OHIF follow the [Getting started guide if needed](https://v3-docs.ohif.org/development/getting-started/)
-* Make sure you are in the OHIF branch `v3-stable`
-  > git checkout -b v3-stable
+* Make sure you are in the OHIF branch `release`
+  > git checkout -b release
 * Add the ohif-healthlake package to OHIF by adding the following JSON to the 'extensions' array in platform/viewer/pluginConfig.json
 ```json
 {
