@@ -50,7 +50,7 @@ export default class DicomTreeClient extends api.DICOMwebClient {
             healthlake
         } = qidoConfig;
         this.healthlake = {
-            groupSeriesBy: 'seriesNumber',
+            groupSeriesBy: 'SeriesInstanceUID',
             region: 'us-east-1',
             endpoint: 'https://runtime-medical-imaging.us-east-1.amazonaws.com',
             tree: true,
@@ -248,7 +248,7 @@ function reduceMetadata(metadataArray: any[], config: HealthLake) {
 }
 
 function reduceSeries(series: any[], config: { groupSeriesBy: string; }) {
-    const groupSeriesBy = config.groupSeriesBy || 'SeriesNumber';
+    const groupSeriesBy = config.groupSeriesBy || 'SeriesInstanceUID';
     return series.reduce((acc, cur) => {
         const currentSerieGroupValue = cur.DICOM[groupSeriesBy];
         if (!acc[currentSerieGroupValue]) {
