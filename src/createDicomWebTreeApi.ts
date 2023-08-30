@@ -496,9 +496,9 @@ function createDicomWebTreeApi(dicomWebConfig, UserAuthenticationService) {
       }
 
       displaySet.images.forEach(instance => {
-        const NumberOfFrames = instance.NumberOfFrames;
-        if (NumberOfFrames > 1) {
-          for (let i = 0; i < NumberOfFrames; i++) {
+        const numberOfFrames = instance.NumberOfFrames ? parseInt(instance.NumberOfFrames) : 0;
+        if (numberOfFrames > 1) {
+          for (let i = 0; i < numberOfFrames; i++) {
             const imageId = this.getImageIdsForInstance({
               instance,
               frame: i,

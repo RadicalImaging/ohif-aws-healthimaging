@@ -146,6 +146,7 @@ export default class DicomTreeClient extends api.DICOMwebClient {
                     return enrichImageSetMetadataWithImageSetId(metadataLoaded, imageSetId);
                 }));
                 const finalMetadata = reduceMetadata(metadataArray, this.healthlake);
+
                 return finalMetadata;
             }
         }
@@ -244,6 +245,19 @@ function reduceMetadata(metadataArray: any[], config: HealthLake) {
     });
     const finalMetadata = metadataArray[0];
     finalMetadata.Study.Series = seriesBySerieId;
+
+    // filter out PR
+    const keys = Object.keys(finalMetadata.Study.Series)
+
+    for (const key of keys) {
+        const series = finalMetadata.Study.Series[key]
+        for (const key2 of Object.keys(series.Instances)) {
+            const instance = series.Instances[key2]
+            // HACK workaround for bug in Cornerstone with floating point rescale slope causing thumbnails to look wrong (speckled)
+            instance.DICOM.RescaleSlope = Math.floor(instance.DICOM.RescaleSlope)
+            instance.DICOM.RescaleIntercept = Math.floor(instance.DICOM.RescaleIntercept)
+        }
+    }
     return finalMetadata;
 }
 

@@ -123,6 +123,7 @@ export function mapImageSetMetadataSummaryToDicomTags(datastoreId, item) {
             "vr": "UI",
             "Value": [item.DICOMTags.DICOMStudyInstanceUID]
         },
+        // AHI specific
         "00200010": {
             "vr": "SH",
             "Value": [item.imageSetId]
