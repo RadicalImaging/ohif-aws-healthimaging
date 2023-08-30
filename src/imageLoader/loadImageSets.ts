@@ -97,7 +97,12 @@ export function reduceImageSetsByStudy(json) {
             cc[a['0020000D'].Value[0]] = a;
         } else {
             cc[a['0020000D'].Value[0]]['00200010'].Value.push(a['00200010'].Value[0]); // push the ImageSetId into the StudyId param (not right)
-            cc[a['0020000D'].Value[0]]['00201208'].Value[0] += a['00201208'].Value[0]; // add up the instances in each imageset
+
+            if(cc[a['0020000D'].Value[0]]['00201208']) {
+                cc[a['0020000D'].Value[0]]['00201208'].Value[0] += a['00201208']?.Value[0]; // add up the instances in each imageset
+            } else {
+                cc[a['0020000D'].Value[0]]['00201208'] = a['00201208']; // add up the instances in each imageset
+            }
         }
         return cc;
     }, {}));
