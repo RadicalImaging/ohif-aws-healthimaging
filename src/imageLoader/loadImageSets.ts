@@ -26,9 +26,7 @@ const getBody = (awsFilter) => {
 async function getImageSets(datastoreId, config, awsFilter, _nextToken = '') {
     const uri = `${config.endpoint}/datastore/${datastoreId}/searchImageSets?maxResults=50&${_nextToken ? 'nextToken='+_nextToken : ''}`;
     
-    console.log('awsFilter=', awsFilter)
     const body = getBody(awsFilter)
-    console.log(body)
     
     const response = await getFetch(config)(uri, {
         method: 'POST',
