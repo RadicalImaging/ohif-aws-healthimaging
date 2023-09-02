@@ -218,6 +218,7 @@ function createDicomWebTreeApi(dicomWebConfig, UserAuthenticationService) {
             const { SeriesInstanceUID } = instance;
             const aSeries = seriesUids[SeriesInstanceUID];
             if (aSeries) {
+              aSeries.numSeriesInstances++
               return;
             }
             seriesUids[SeriesInstanceUID] = {
@@ -226,7 +227,7 @@ function createDicomWebTreeApi(dicomWebConfig, UserAuthenticationService) {
               modality: instance.Modality,
               seriesNumber: instance.SeriesNumber,
               seriesDate: instance.SeriesDate,
-              numSeriesInstances: instance.NumberOfSeriesInstances,
+              numSeriesInstances: 1,
               description: instance.SeriesDescription,
             };
           });
@@ -495,9 +496,9 @@ function createDicomWebTreeApi(dicomWebConfig, UserAuthenticationService) {
       }
 
       displaySet.images.forEach(instance => {
-        const NumberOfFrames = instance.NumberOfFrames;
-        if (NumberOfFrames > 1) {
-          for (let i = 0; i < NumberOfFrames; i++) {
+        const numberOfFrames = instance.NumberOfFrames ? parseInt(instance.NumberOfFrames) : 0;
+        if (numberOfFrames > 1) {
+          for (let i = 0; i < numberOfFrames; i++) {
             const imageId = this.getImageIdsForInstance({
               instance,
               frame: i,

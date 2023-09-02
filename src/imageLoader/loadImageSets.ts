@@ -26,9 +26,7 @@ const getBody = (awsFilter) => {
 async function getImageSets(datastoreId, config, awsFilter, _nextToken = '') {
     const uri = `${config.endpoint}/datastore/${datastoreId}/searchImageSets?maxResults=50&${_nextToken ? 'nextToken='+_nextToken : ''}`;
     
-    console.log('awsFilter=', awsFilter)
     const body = getBody(awsFilter)
-    console.log(body)
     
     const response = await getFetch(config)(uri, {
         method: 'POST',
@@ -82,7 +80,9 @@ const loadImageSets = async (config, filters) => {
                 }
             );
             const json = imageSetsMetadataSummaries.map(mapImageSetMetadataSummaryToDicomTags.bind(null, config.datastoreID));
+            // combines imagesets by studyuid
             const uniq = reduceImageSetsByStudy(json);
+
             config.collections[json.ImageSetID] = uniq;
             return uniq;
         });
@@ -96,7 +96,13 @@ export function reduceImageSetsByStudy(json) {
         if (!cc[a['0020000D'].Value[0]]) {
             cc[a['0020000D'].Value[0]] = a;
         } else {
-            cc[a['0020000D'].Value[0]]['00200010'].Value.push(a['00200010'].Value[0]);
+            cc[a['0020000D'].Value[0]]['00200010'].Value.push(a['00200010'].Value[0]); // push the ImageSetId into the StudyId param (not right)
+
+            if(cc[a['0020000D'].Value[0]]['00201208']) {
+                cc[a['0020000D'].Value[0]]['00201208'].Value[0] += a['00201208']?.Value[0]; // add up the instances in each imageset
+            } else {
+                cc[a['0020000D'].Value[0]]['00201208'] = a['00201208']; // add up the instances in each imageset
+            }
         }
         return cc;
     }, {}));
@@ -120,6 +126,7 @@ export function mapImageSetMetadataSummaryToDicomTags(datastoreId, item) {
             "vr": "UI",
             "Value": [item.DICOMTags.DICOMStudyInstanceUID]
         },
+        // AHI specific
         "00200010": {
             "vr": "SH",
             "Value": [item.imageSetId]
