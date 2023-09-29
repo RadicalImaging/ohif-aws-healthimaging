@@ -16,7 +16,10 @@ Note - The official name for the service is "AWS HealthImaging".  Before GA it w
 # AWS_HOST
 docker run -p 8089:8089 -e AWS_ACCESS_KEY_ID='YOUR_KEY' -e AWS_SECRET_ACCESS_KEY='YOUR_SECRET' -e AWS_REGION='YOUR_REGION' flexview/ohif-aws-healthimaging-proxy
 ```
-* Add healthimaging as a dependency `yarn add  ohif-aws-healthimaging --ignore-workspace-root-check`
+* Add healthimaging as a dependency 
+```bash
+yarn cli add-extension ohif-aws-healthimaging
+```
 * Add healthimaging adapter as an OHIF plugin `platform/viewer/pluginConfig.json`
 ```json
   "extensions": [
