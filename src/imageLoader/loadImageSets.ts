@@ -24,25 +24,36 @@ const getBody = (awsFilter) => {
 }
 
 async function getImageSets(datastoreId, config, awsFilter, _nextToken = '') {
-    const uri = `${config.endpoint}/datastore/${datastoreId}/searchImageSets?maxResults=50&${_nextToken ? 'nextToken='+_nextToken : ''}`;
-    
-    const body = getBody(awsFilter)
-    
-    const response = await getFetch(config)(uri, {
-        method: 'POST',
-        headers: { 
-            "Content-type": "application/json" 
-        },
-        body: JSON.stringify(body)
-    })
-    const {
-        imageSetsMetadataSummaries,
-        nextToken
-    } = await response.json();
-    if (nextToken) {
-        return imageSetsMetadataSummaries.concat(await getImageSets(datastoreId, config, awsFilter, nextToken));
-    }
-    return imageSetsMetadataSummaries;
+
+    console.log('awsFilter=', awsFilter)
+
+    let imageSetSummaries = []
+    const maxImageSetsToReturn = 300
+    do {
+
+        const uri = `${config.endpoint}/datastore/${datastoreId}/searchImageSets?maxResults=50&${_nextToken ? 'nextToken='+_nextToken : ''}`;
+
+        const body = getBody(awsFilter)
+
+        const response = await getFetch(config)(uri, {
+            method: 'POST',
+            headers: { 
+                "Content-type": "application/json" 
+            },
+            body: JSON.stringify(body)
+        })
+        const {
+            imageSetsMetadataSummaries,
+            nextToken
+        } = await response.json();
+
+        console.log('imageSetsMetadataSummaries', imageSetsMetadataSummaries)
+
+        imageSetSummaries = imageSetSummaries.concat(imageSetsMetadataSummaries)
+        _nextToken = nextToken
+
+    } while (imageSetSummaries.length < maxImageSetsToReturn && _nextToken) 
+    return imageSetSummaries;
 }
 
 const loadImageSetsCache = new Map();
