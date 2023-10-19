@@ -56,7 +56,6 @@ export default class DicomTreeClient extends api.DICOMwebClient {
             tree: true,
             images: true,
             collections: {},
-            ...window.healthlake,
             ...qidoConfig.healthlake,
         };
     }
@@ -130,7 +129,7 @@ export default class DicomTreeClient extends api.DICOMwebClient {
             datastoreID = this.healthlake?.datastoreID,
         } = options;
         if (this.healthlake) {
-            const studies = await this.searchForStudies({
+            let studies = await this.searchForStudies({
                 ...options,
                 queryParams: {
                     StudyInstanceUID: studyInstanceUID
@@ -145,7 +144,33 @@ export default class DicomTreeClient extends api.DICOMwebClient {
                     const metadataLoaded = await loadMetaDataInternal(datastoreID, imageSetId, this.healthlake);
                     return enrichImageSetMetadataWithImageSetId(metadataLoaded, imageSetId);
                 }));
-                const finalMetadata = reduceMetadata(metadataArray, this.healthlake);
+                let finalMetadata = reduceMetadata(metadataArray, this.healthlake);
+                
+                /* fixup code
+                const keys = Object.keys(finalMetadata.Study.Series)
+                for(const key of keys) {
+                    const series = finalMetadata.Study.Series[key]                    
+                    for(const key2 of Object.keys(series.Instances)) {
+                        const instance = series.Instances[key2]
+                        for(const ikey of Object.keys(instance.DICOM)) {
+                            if(ikey[0] >= '0' && ikey[0] <= '9') {
+                                delete instance.DICOM[ikey]
+                            }
+                        }
+                        console.log(instance)
+                        // HACK workaround for bug in Cornerstone with floating point rescale slope causing thumbnails to look wrong (speckled)
+                        //instance.DICOM.RescaleSlope = Math.floor(parseFloat(instance.DICOM.RescaleSlope))
+                        //instance.DICOM.RescaleIntercept = Math.floor(parseFloat(instance.DICOM.RescaleIntercept))
+                        console.log("before", instance.DICOM.RescaleSlope,instance.DICOM.RescaleIntercept, instance.DICOM.WindowCenter, instance.DICOM.WindowWidth)
+                        instance.DICOM.RescaleSlope = instance.DICOM.RescaleSlope ? (parseFloat(instance.DICOM.RescaleSlope)) : undefined
+                        instance.DICOM.RescaleIntercept = instance.DICOM.RescaleIntercept ? (parseFloat(instance.DICOM.RescaleIntercept)) : undefined
+                        instance.DICOM.WindowCenter = instance.DICOM.WindowCenter ? (parseFloat(instance.DICOM.WindowCenter)) : undefined
+                        instance.DICOM.WindowWidth = instance.DICOM.WindowWidth ? (parseFloat(instance.DICOM.WindowWidth)) : undefined
+                        //instance.DICOM.PixelRepresentation = 1
+                        console.log("after", instance.DICOM.RescaleSlope,instance.DICOM.RescaleIntercept,instance.DICOM.WindowCenter, instance.DICOM.WindowWidth )
+                    }
+                }
+                */
 
                 return finalMetadata;
             }

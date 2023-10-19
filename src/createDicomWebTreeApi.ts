@@ -116,6 +116,11 @@ function createDicomWebTreeApi(dicomWebConfig, UserAuthenticationService) {
     healthlake,
   } = dicomWebConfig;
 
+  if(healthlake.integrationMode === 'LocalStorage') {
+    healthlake.datastoreID = window.localStorage.getItem('datastoreId')
+    healthlake.endpoint = window.localStorage.getItem('endpoint')
+  }
+
   const qidoConfig = {
     url: qidoRoot,
     staticWado,
@@ -168,28 +173,7 @@ function createDicomWebTreeApi(dicomWebConfig, UserAuthenticationService) {
               supportsFuzzyMatching,
               supportsWildcard,
             }) || {};
-          if (window.healthlake && window.healthlake.ImageSetID) {
-            // Todo implement image set id search
-            const { ImageSetID, datastoreID } = window.healthlake;
-            const tree = await implementation._retrieveSeriesMetadataDeduplicated(
-              ImageSetID
-            );
-            const instance = tree[0];
-            return [
-              {
-                studyInstanceUid: instance.StudyInstanceUID,
-                date: instance.StudyDate, // YYYYMMDD
-                time: instance.StudyTime, // HHmmss.SSS (24-hour, minutes, seconds, fractional seconds)
-                accession: instance.AccessionNumber || '', // short string, probably a number?
-                mrn: instance.PatientID || '', // medicalRecordNumber
-                patientName: instance.PatientName || '',
-                instances: tree.length || 0, // number
-                description: instance.StudyDescription || '',
-                modalities: instance.Modality || '',
-              },
-            ];
-          }
-
+         
           const results = await qidoSearch(
             qidoDicomWebClient,
             undefined,
@@ -496,9 +480,9 @@ function createDicomWebTreeApi(dicomWebConfig, UserAuthenticationService) {
       }
 
       displaySet.images.forEach(instance => {
-        const numberOfFrames = instance.NumberOfFrames ? parseInt(instance.NumberOfFrames) : 0;
-        if (numberOfFrames > 1) {
-          for (let i = 0; i < numberOfFrames; i++) {
+        const NumberOfFrames = instance.NumberOfFrames ? parseInt(instance.NumberOfFrames) : 0;
+        if (NumberOfFrames > 1) {
+          for (let i = 0; i < NumberOfFrames; i++) {
             const imageId = this.getImageIdsForInstance({
               instance,
               frame: i,
@@ -514,9 +498,9 @@ function createDicomWebTreeApi(dicomWebConfig, UserAuthenticationService) {
       return imageIds;
     },
 
-    getImageIdsForInstance({ instance, frame = 1 }) {
+    getImageIdsForInstance({ instance, frame = 0 }) {
       const { DatastoreID, ImageFrames, ImageSetID } = instance;
-      const frameID = ImageFrames?.[frame - 1]?.ID;
+      const frameID = ImageFrames?.[frame]?.ID;
       const healthlakeParam = qidoDicomWebClient.healthlake?.images ? "true" : "false";
       const extraParameters =
         (DatastoreID && {
