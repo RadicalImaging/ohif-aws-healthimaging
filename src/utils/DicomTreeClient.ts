@@ -130,7 +130,7 @@ export default class DicomTreeClient extends api.DICOMwebClient {
             datastoreID = this.healthlake?.datastoreID,
         } = options;
         if (this.healthlake) {
-            const studies = await this.searchForStudies({
+            let studies = await this.searchForStudies({
                 ...options,
                 queryParams: {
                     StudyInstanceUID: studyInstanceUID
@@ -145,7 +145,20 @@ export default class DicomTreeClient extends api.DICOMwebClient {
                     const metadataLoaded = await loadMetaDataInternal(datastoreID, imageSetId, this.healthlake);
                     return enrichImageSetMetadataWithImageSetId(metadataLoaded, imageSetId);
                 }));
-                const finalMetadata = reduceMetadata(metadataArray, this.healthlake);
+                let finalMetadata = reduceMetadata(metadataArray);
+                // filter out PR
+                const keys = Object.keys(finalMetadata.Study.Series)
+
+                for(const key of keys) {
+                    const series = finalMetadata.Study.Series[key]                    
+                    for(const key2 of Object.keys(series.Instances)) {
+                        const instance = series.Instances[key2]
+                        // HACK workaround for bug in Cornerstone with floating point rescale slope causing thumbnails to look wrong (speckled)
+                        instance.DICOM.RescaleSlope = Math.floor(instance.DICOM.RescaleSlope)
+                        instance.DICOM.RescaleIntercept = Math.floor(instance.DICOM.RescaleIntercept)
+                    }
+                }
+
 
                 return finalMetadata;
             }
