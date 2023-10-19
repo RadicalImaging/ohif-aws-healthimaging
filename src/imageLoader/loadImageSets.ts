@@ -27,7 +27,7 @@ async function getImageSets(datastoreId, config, awsFilter, _nextToken = '') {
 
     console.log('awsFilter=', awsFilter)
 
-    let imageSetSummaries : any[] = []
+    let imageSetSummaries = []
     const maxImageSetsToReturn = 300
     do {
 
