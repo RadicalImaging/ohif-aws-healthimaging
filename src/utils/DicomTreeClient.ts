@@ -145,7 +145,7 @@ export default class DicomTreeClient extends api.DICOMwebClient {
                     const metadataLoaded = await loadMetaDataInternal(datastoreID, imageSetId, this.healthlake);
                     return enrichImageSetMetadataWithImageSetId(metadataLoaded, imageSetId);
                 }));
-                let finalMetadata = reduceMetadata(metadataArray);
+                let finalMetadata = reduceMetadata(metadataArray, this.healthlake);
                 // filter out PR
                 const keys = Object.keys(finalMetadata.Study.Series)
 
