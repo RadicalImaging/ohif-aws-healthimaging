@@ -130,7 +130,7 @@ export default class DicomTreeClient extends api.DICOMwebClient {
             datastoreID = this.healthlake?.datastoreID,
         } = options;
         if (this.healthlake) {
-            let studies = await this.searchForStudies({
+            const studies = await this.searchForStudies({
                 ...options,
                 queryParams: {
                     StudyInstanceUID: studyInstanceUID
@@ -145,21 +145,7 @@ export default class DicomTreeClient extends api.DICOMwebClient {
                     const metadataLoaded = await loadMetaDataInternal(datastoreID, imageSetId, this.healthlake);
                     return enrichImageSetMetadataWithImageSetId(metadataLoaded, imageSetId);
                 }));
-                let finalMetadata = reduceMetadata(metadataArray, this.healthlake);
-                // filter out PR
-                const keys = Object.keys(finalMetadata.Study.Series)
-
-                for(const key of keys) {
-                    const series = finalMetadata.Study.Series[key]                    
-                    for(const key2 of Object.keys(series.Instances)) {
-                        const instance = series.Instances[key2]
-                        // HACK workaround for bug in Cornerstone with floating point rescale slope causing thumbnails to look wrong (speckled)
-                        instance.DICOM.RescaleSlope = Math.floor(instance.DICOM.RescaleSlope)
-                        instance.DICOM.RescaleIntercept = Math.floor(instance.DICOM.RescaleIntercept)
-                    }
-                }
-
-
+                const finalMetadata = reduceMetadata(metadataArray, this.healthlake);
                 return finalMetadata;
             }
         }
@@ -253,16 +239,6 @@ function reduceMetadata(metadataArray: any[], config: HealthLake) {
         const series = seriesBySerieId[key];
         seriesBySerieId[key] = seriesBySerieId[key][0];
         seriesBySerieId[key].Instances = series.reduce((acc, cur) => {
-            Object.keys(cur.Instances).forEach((instanceKey) => {
-                const instance = cur.Instances[instanceKey];
-                if(instance.DICOM.RescaleSlope !== undefined) {
-                    instance.DICOM.RescaleSlope = Math.floor(instance.DICOM.RescaleSlope)
-                }
-
-                if(instance.DICOM.RescaleIntercept !== undefined) {
-                    instance.DICOM.RescaleIntercept = Math.floor(instance.DICOM.RescaleIntercept)
-                }
-            });
             return Object.assign(acc, cur.Instances);
         }, {});
     });
