@@ -89,7 +89,7 @@ Support metadata and imaging data loading from AWS HealthImaging
 
 
 ## Authors 
-Bill Wallace, Mateus Freira, Radical Imaging, Chris Hafey, Ibrahim Mohamed
+Bill Wallace, Mateus Freira, Radical Imaging, Chris Hafey
 
 ## License 
 MIT

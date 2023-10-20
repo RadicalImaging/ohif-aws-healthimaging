@@ -514,9 +514,9 @@ function createDicomWebTreeApi(dicomWebConfig, UserAuthenticationService) {
       return imageIds;
     },
 
-    getImageIdsForInstance({ instance, frame = 0 }) {
+    getImageIdsForInstance({ instance, frame = 1 }) {
       const { DatastoreID, ImageFrames, ImageSetID } = instance;
-      const frameID = ImageFrames?.[frame]?.ID;
+      const frameID = ImageFrames?.[frame - 1]?.ID;
       const healthlakeParam = qidoDicomWebClient.healthlake?.images ? "true" : "false";
       const extraParameters =
         (DatastoreID && {
