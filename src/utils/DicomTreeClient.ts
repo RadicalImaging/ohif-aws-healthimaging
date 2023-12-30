@@ -51,6 +51,7 @@ export default class DicomTreeClient extends api.DICOMwebClient {
         } = qidoConfig;
         this.healthlake = {
             groupSeriesBy: 'SeriesInstanceUID',
+            maxImageSetsToReturn: 300,
             region: 'us-east-1',
             endpoint: 'https://runtime-medical-imaging.us-east-1.amazonaws.com',
             tree: true,

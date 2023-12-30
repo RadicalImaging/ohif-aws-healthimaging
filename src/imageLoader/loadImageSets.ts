@@ -28,7 +28,6 @@ async function getImageSets(datastoreId, config, awsFilter, _nextToken = '') {
     console.log('awsFilter=', awsFilter)
 
     let imageSetSummaries = []
-    const maxImageSetsToReturn = 300
     do {
 
         const uri = `${config.endpoint}/datastore/${datastoreId}/searchImageSets?maxResults=50&${_nextToken ? 'nextToken='+_nextToken : ''}`;
@@ -52,7 +51,7 @@ async function getImageSets(datastoreId, config, awsFilter, _nextToken = '') {
         imageSetSummaries = imageSetSummaries.concat(imageSetsMetadataSummaries)
         _nextToken = nextToken
 
-    } while (imageSetSummaries.length < maxImageSetsToReturn && _nextToken) 
+    } while (imageSetSummaries.length < config.maxImageSetsToReturn && _nextToken) 
     return imageSetSummaries;
 }
 
