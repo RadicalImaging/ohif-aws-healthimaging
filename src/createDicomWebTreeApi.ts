@@ -35,20 +35,20 @@ const metadataProvider = classes.MetadataProvider;
 
 const retrievedStudies = {};
 
-const initializeHealthlakeFetch = (healthlake) => {
-  if( !healthlake.endpoint ) throw new Error('endpoint is mandatory');
+const initializeHealthimagingFetch = (healthimaging) => {
+  if( !healthimaging.endpoint ) throw new Error('endpoint is mandatory');
   cornerstoneDICOMImageLoader.configure({
     open: function (xhr: any, url: string) {
       const urlParams = new URLSearchParams(url);
       const datastoreId = urlParams.get('DatastoreID');
       const collectionId = urlParams.get('ImageSetID');
       const imageFrameId = urlParams.get('frameID');
-      const isAwsHealthImagingRequest = urlParams.get('healthlake');
+      const isAwsHealthImagingRequest = urlParams.get('healthimaging');
       if(!isAwsHealthImagingRequest) {
         return xhr.open('get', url, true);
       }
       const uri =
-        healthlake.endpoint +
+        healthimaging.endpoint +
         '/datastore/' +
         datastoreId +
         '/imageSet/' +
@@ -60,8 +60,8 @@ const initializeHealthlakeFetch = (healthlake) => {
         "imageFrameId" : imageFrameId
       });
 
-      const signer = healthlake.awsAccessKeyID ? new AwsV4Signer({
-        ...awsCredentials(healthlake),
+      const signer = healthimaging.awsAccessKeyID ? new AwsV4Signer({
+        ...awsCredentials(healthimaging),
         service: 'medical-imaging',
         url: uri,
         method: 'POST',
@@ -113,13 +113,13 @@ function createDicomWebTreeApi(dicomWebConfig, UserAuthenticationService) {
     supportsWildcard,
     staticWado,
     singlepart,
-    healthlake,
+    healthimaging,
   } = dicomWebConfig;
 
   const qidoConfig = {
     url: qidoRoot,
     staticWado,
-    healthlake,
+    healthimaging,
     singlepart,
     headers: UserAuthenticationService.getAuthorizationHeader(),
     errorInterceptor: errorHandler.getHTTPErrorHandler(),
@@ -129,7 +129,7 @@ function createDicomWebTreeApi(dicomWebConfig, UserAuthenticationService) {
     url: wadoRoot,
     singlepart,
     staticWado,
-    healthlake,
+    healthimaging,
     headers: UserAuthenticationService.getAuthorizationHeader(),
     errorInterceptor: errorHandler.getHTTPErrorHandler(),
   };
@@ -139,7 +139,7 @@ function createDicomWebTreeApi(dicomWebConfig, UserAuthenticationService) {
   const qidoDicomWebClient = new DicomTreeClient(qidoConfig);
   const wadoDicomWebClient = new DicomTreeClient(wadoConfig);
 
-  initializeHealthlakeFetch(qidoDicomWebClient.healthlake);
+  initializeHealthimagingFetch(qidoDicomWebClient.healthimaging);
 
   const implementation = {
     initialize: ({ params, query }) => {
@@ -168,9 +168,9 @@ function createDicomWebTreeApi(dicomWebConfig, UserAuthenticationService) {
               supportsFuzzyMatching,
               supportsWildcard,
             }) || {};
-          if (window.healthlake && window.healthlake.ImageSetID) {
+          if (window.healthimaging && window.healthimaging.ImageSetID) {
             // Todo implement image set id search
-            const { ImageSetID, datastoreID } = window.healthlake;
+            const { ImageSetID, datastoreID } = window.healthimaging;
             const tree = await implementation._retrieveSeriesMetadataDeduplicated(
               ImageSetID
             );
@@ -421,7 +421,7 @@ function createDicomWebTreeApi(dicomWebConfig, UserAuthenticationService) {
           'instances'
         );
         retrievedStudies[StudyInstanceUID] = naturalizedInstancesMetadata;
-        performance.measure('healthlake:retrieve-metadatatree', {
+        performance.measure('healthimaging:retrieve-metadatatree', {
           start: startTime,
           end: performance.now(),
         });
@@ -478,7 +478,7 @@ function createDicomWebTreeApi(dicomWebConfig, UserAuthenticationService) {
       Object.keys(instancesPerSeries).forEach(seriesUID =>
         DicomMetadataStore.addInstances(instancesPerSeries[seriesUID], false)
       );
-      performance.measure('healthlake:convert-metadataTree', {
+      performance.measure('healthimaging:convert-metadataTree', {
             start: startTime,
             end: performance.now(),
         }
@@ -517,13 +517,13 @@ function createDicomWebTreeApi(dicomWebConfig, UserAuthenticationService) {
     getImageIdsForInstance({ instance, frame = 0 }) {
       const { DatastoreID, ImageFrames, ImageSetID } = instance;
       const frameID = ImageFrames?.[frame]?.ID;
-      const healthlakeParam = qidoDicomWebClient.healthlake?.images ? "true" : "false";
+      const healthimagingParam = qidoDicomWebClient.healthimaging?.images ? "true" : "false";
       const extraParameters =
         (DatastoreID && {
           DatastoreID,
           frameID,
           ImageSetID,
-          healthlake: healthlakeParam,
+          healthimaging: healthimagingParam,
         }) ||
         undefined;
       const imageIds = getImageId({

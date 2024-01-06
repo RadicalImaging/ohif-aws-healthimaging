@@ -1,6 +1,6 @@
 # OHIF AWS HealthImaging adapter
 
-Note - The official name for the service is "AWS HealthImaging".  Before GA it was called "Amazon HealthLake Imaging" and several references in the code and documentation still reference this old name.  These references will be updated shortly
+Note - The official name for the service is "AWS HealthImaging".
 
 # Setting up
 
@@ -37,11 +37,11 @@ platform/app/public/config/default.js
   //...
   dataSources: [{
     friendlyName: 'AWS HealthImaging',
-    namespace: 'ohif-aws-healthimaging.dataSourcesModule.healthlake',
-    sourceName: 'healthlake',
+    namespace: 'ohif-aws-healthimaging.dataSourcesModule.healthimaging',
+    sourceName: 'healthimaging',
     configuration: {
-      name: 'healthlake',
-      healthlake: {
+      name: 'healthimaging',
+      healthimaging: {
         datastoreID: $YOUR_DATASTORE_ID,
         endpoint: 'http://localhost:8089',// Add here the address to you proxy
       },

@@ -73,7 +73,7 @@ const loadImageSets = async (config, filters) => {
     const cached = loadImageSetsCache.get(cacheKey);
     if (cached) {
         performance.measure(
-            "healthlake:imagessets-load-from-cache", {
+            "healthimaging:imagessets-load-from-cache", {
                 start: startTime,
                 detail: "cached",
                 end: performance.now(),
@@ -83,7 +83,7 @@ const loadImageSets = async (config, filters) => {
     } else {
         const getImageSetPromise = getImageSets(config.datastoreID, config, aswFilter).then((imageSetsMetadataSummaries) => {
             performance.measure(
-                "healthlake:imagessets-load", {
+                "healthimaging:imagessets-load", {
                     start: startTime,
                     detail: "request",
                     end: performance.now(),

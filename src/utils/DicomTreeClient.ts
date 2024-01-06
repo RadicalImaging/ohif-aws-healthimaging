@@ -5,7 +5,7 @@ import loadMetaDataInternal from '../imageLoader/loadMetaData';
 import loadImageSets from '../imageLoader/loadImageSets';
 
 
-export type HealthLake = {
+export type HealthImaging = {
     collections: Record < string,
     unknown > ;
     awsAccessKeyID: string;
@@ -24,7 +24,7 @@ export type HealthLake = {
  * by manually implementing a query option.
  */
 export default class DicomTreeClient extends api.DICOMwebClient {
-    healthlake: HealthLake;
+    healthimaging: HealthImaging;
     staticWado = false;
 
     static studyFilterKeys = {
@@ -47,9 +47,9 @@ export default class DicomTreeClient extends api.DICOMwebClient {
         super(qidoConfig);
         this.staticWado = qidoConfig.staticWado;
         const {
-            healthlake
+            healthimaging
         } = qidoConfig;
-        this.healthlake = {
+        this.healthimaging = {
             groupSeriesBy: 'SeriesInstanceUID',
             maxImageSetsToReturn: 300,
             region: 'us-east-1',
@@ -57,8 +57,8 @@ export default class DicomTreeClient extends api.DICOMwebClient {
             tree: true,
             images: true,
             collections: {},
-            ...window.healthlake,
-            ...qidoConfig.healthlake,
+            ...window.healthimaging,
+            ...qidoConfig.healthimaging,
         };
     }
 
@@ -70,12 +70,12 @@ export default class DicomTreeClient extends api.DICOMwebClient {
      */
     async searchForStudies(options) {
         const search = new URLSearchParams(document.location.search);
-        const ImageSetID = search?.get("ImageSetID") || this.healthlake.imageSetID;
+        const ImageSetID = search?.get("ImageSetID") || this.healthimaging.imageSetID;
         let searchResult;
-        if(this.healthlake?.queryJson) {
-          searchResult = this.healthlake.queryJson[0]==='[' ? JSON.parse(this.healthlake.queryJson) : await (await fetch(this.healthlake.queryJson)).json();
+        if(this.healthimaging?.queryJson) {
+          searchResult = this.healthimaging.queryJson[0]==='[' ? JSON.parse(this.healthimaging.queryJson) : await (await fetch(this.healthimaging.queryJson)).json();
         } else {
-            searchResult = await loadImageSets(this.healthlake, options.queryParams);
+            searchResult = await loadImageSets(this.healthimaging, options.queryParams);
         }
         const {
             queryParams
@@ -127,10 +127,10 @@ export default class DicomTreeClient extends api.DICOMwebClient {
         }
 
         let {
-            ImageSetID = search?.get("ImageSetID") || this.healthlake.imageSetID,
-            datastoreID = this.healthlake?.datastoreID,
+            ImageSetID = search?.get("ImageSetID") || this.healthimaging.imageSetID,
+            datastoreID = this.healthimaging?.datastoreID,
         } = options;
-        if (this.healthlake) {
+        if (this.healthimaging) {
             const studies = await this.searchForStudies({
                 ...options,
                 queryParams: {
@@ -143,21 +143,21 @@ export default class DicomTreeClient extends api.DICOMwebClient {
                 const imageSetsIds = (study['00200010']?.Value ||[]);
                 // Todo do it one by one and go adding to the screen as they arrive
                 const metadataArray = await Promise.all(imageSetsIds.map(async (imageSetId: String) => {
-                    const metadataLoaded = await loadMetaDataInternal(datastoreID, imageSetId, this.healthlake);
+                    const metadataLoaded = await loadMetaDataInternal(datastoreID, imageSetId, this.healthimaging);
                     return enrichImageSetMetadataWithImageSetId(metadataLoaded, imageSetId);
                 }));
-                const finalMetadata = reduceMetadata(metadataArray, this.healthlake);
+                const finalMetadata = reduceMetadata(metadataArray, this.healthimaging);
 
                 return finalMetadata;
             }
         }
         if (ImageSetID && datastoreID) {
-            if (this.healthlake.collections[ImageSetID]) {
-                return this.healthlake.collections[ImageSetID];
+            if (this.healthimaging.collections[ImageSetID]) {
+                return this.healthimaging.collections[ImageSetID];
             }
-            return loadMetaDataInternal(datastoreID, ImageSetID, this.healthlake);
+            return loadMetaDataInternal(datastoreID, ImageSetID, this.healthimaging);
         } else {
-            throw new Error(`Missing healthlake configuration`);
+            throw new Error(`Missing healthimaging configuration`);
         }
     }
 
@@ -232,7 +232,7 @@ export default class DicomTreeClient extends api.DICOMwebClient {
         return this.compareValues(testValue, value) && true;
     }
 }
-function reduceMetadata(metadataArray: any[], config: HealthLake) {
+function reduceMetadata(metadataArray: any[], config: HealthImaging) {
     const series = metadataArray.map((cur) => Object.values(cur.Study.Series)).flat();
 
     const seriesBySerieId = reduceSeries(series, config);

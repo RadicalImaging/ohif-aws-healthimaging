@@ -2,7 +2,7 @@ import createDicomWebTreeApi from './createDicomWebTreeApi';
 function getDataSourcesModule() {
   return [
     {
-      name: 'healthlake',
+      name: 'healthimaging',
       type: 'webApi',
       createDataSource: createDicomWebTreeApi,
     },
