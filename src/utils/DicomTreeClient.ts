@@ -141,7 +141,7 @@ export default class DicomTreeClient extends api.DICOMwebClient {
             if (studies && studies.length) {
                 const [study] = studies;
                 datastoreID = study['00181002']?.Value?.[0] || datastoreID;
-                const imageSetsIds = (study['00200010']?.Value ||[]);
+                const imageSetsIds = search?.get("ImageSetID") ? [ search?.get("ImageSetID") ] : (study['00200010']?.Value ||[]);
                 // Todo do it one by one and go adding to the screen as they arrive
                 const metadataArray = await Promise.all(imageSetsIds.map(async (imageSetId: String) => {
                     const metadataLoaded = await loadMetaDataInternal(datastoreID, imageSetId, this.healthlake);
