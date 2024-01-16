@@ -10,6 +10,7 @@ const awsCredentials = (config) => {
   const credentials = {
     secretAccessKey: healthimaging?.awsSecretAccessKey || config.awsSecretAccessKey,
     accessKeyId: healthimaging?.awsAccessKeyID || config.awsAccessKeyID,
+    sessionToken: healthimaging?.awsSessionToken || config.awsSessionToken,
     service: "medical-imaging"
   };
 

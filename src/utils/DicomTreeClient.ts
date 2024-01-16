@@ -10,6 +10,7 @@ export type HealthImaging = {
     unknown > ;
     awsAccessKeyID: string;
     awsSecretAccessKey: string;
+    awsSessionToken ? : string;
     datastoreID ? : string;
     region ? : string;
     endpoint ? : string;
