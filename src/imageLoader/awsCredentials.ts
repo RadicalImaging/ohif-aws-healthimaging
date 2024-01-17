@@ -1,16 +1,16 @@
 
 const awsCredentials = (config) => {
-  let { healthlake } = window;
-  if (!healthlake) {
-    const sHealthLake = window.localStorage.getItem("healthlake");
-    if (sHealthLake) {
-      healthlake = window.healthlake = JSON.parse(sHealthLake);
+  let { healthimaging } = window;
+  if (!healthimaging) {
+    const sHealthImaging = window.localStorage.getItem("healthimaging");
+    if (sHealthImaging) {
+      healthimaging = window.healthimaging = JSON.parse(sHealthImaging);
     }
   }
   const credentials = {
-    secretAccessKey: healthlake?.awsSecretAccessKey || config.awsSecretAccessKey,
-    accessKeyId: healthlake?.awsAccessKeyID || config.awsAccessKeyID,
-    sessionToken: healthlake?.awsSessionToken || config.awsSessionToken,
+    secretAccessKey: healthimaging?.awsSecretAccessKey || config.awsSecretAccessKey,
+    accessKeyId: healthimaging?.awsAccessKeyID || config.awsAccessKeyID,
+    sessionToken: healthimaging?.awsSessionToken || config.awsSessionToken,
     service: "medical-imaging"
   };
 

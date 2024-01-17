@@ -61,5 +61,5 @@ const proxy = createServer(async (req, res) => {
 });
 const port = process.env.PORT || 8089;
 proxy.listen(port, () => {
-    console.log(`Healthlake proxy server is running on http://:::${port}`);
+    console.log(`Healthimaging proxy server is running on http://:::${port}`);
 });

@@ -7,27 +7,27 @@ describe('awsCredentials', () => {
   };
 
   beforeEach(() => {
-    delete window.healthlake;
-    window.localStorage.removeItem('healthlake');
+    delete window.healthimaging;
+    window.localStorage.removeItem('healthimaging');
   });
 
-  test('returns credentials from healthlake object if present', () => {
-    const healthlake = {
-      awsSecretAccessKey: 'healthlake-secret',
-      awsAccessKeyID: 'healthlake-access-key'
+  test('returns credentials from healthimaging object if present', () => {
+    const healthimaging = {
+      awsSecretAccessKey: 'healthimaging-secret',
+      awsAccessKeyID: 'healthimaging-access-key'
     };
-    window.healthlake = healthlake;
+    window.healthimaging = healthimaging;
 
     const result = awsCredentials(config);
 
     expect(result).toEqual({
-      secretAccessKey: healthlake.awsSecretAccessKey,
-      accessKeyId: healthlake.awsAccessKeyID,
+      secretAccessKey: healthimaging.awsSecretAccessKey,
+      accessKeyId: healthimaging.awsAccessKeyID,
       service: "medical-imaging"
     });
   });
 
-  test('returns credentials from config if healthlake object is not present', () => {
+  test('returns credentials from config if healthimaging object is not present', () => {
     const result = awsCredentials(config);
 
     expect(result).toEqual({
@@ -37,18 +37,18 @@ describe('awsCredentials', () => {
     });
   });
 
-  test('returns credentials from parsed local storage if healthlake object is not present', () => {
-    const healthlake = {
-      awsSecretAccessKey: 'healthlake-secret',
-      awsAccessKeyID: 'healthlake-access-key'
+  test('returns credentials from parsed local storage if healthimaging object is not present', () => {
+    const healthimaging = {
+      awsSecretAccessKey: 'healthimaging-secret',
+      awsAccessKeyID: 'healthimaging-access-key'
     };
-    window.localStorage.setItem('healthlake', JSON.stringify(healthlake));
+    window.localStorage.setItem('healthimaging', JSON.stringify(healthimaging));
 
     const result = awsCredentials(config);
 
     expect(result).toEqual({
-      secretAccessKey: healthlake.awsSecretAccessKey,
-      accessKeyId: healthlake.awsAccessKeyID,
+      secretAccessKey: healthimaging.awsSecretAccessKey,
+      accessKeyId: healthimaging.awsAccessKeyID,
       service: "medical-imaging"
     });
   });

@@ -7,7 +7,7 @@ const loadMetaDataInternal = async (datastoreId, collectionId, config) => {
         method: 'POST',
     })
     performance.measure(
-        "healthlake-metadata-load", {
+        "healthimaging-metadata-load", {
             start: startTime,
             end: performance.now(),
         }
