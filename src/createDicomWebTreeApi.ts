@@ -82,6 +82,8 @@ const initializeHealthlakeFetch = (healthlake) => {
           signer.sign().then(({headers}) => {
             xhr.setRequestHeader('x-amz-date', headers.get('x-amz-date'));
             xhr.setRequestHeader('Authorization', headers.get('Authorization'));
+            // 'x-amz-security-token' request header is only required if temporary credentials used. Otherwise will cause authentication error.
+            headers.get('x-amz-security-token') && xhr.setRequestHeader('x-amz-security-token', headers.get('x-amz-security-token'));
             xhr.wasSend(body);
           });
         } else {
