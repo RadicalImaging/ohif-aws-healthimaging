@@ -107,7 +107,8 @@ const initializeHealthlakeFetch = (healthlake) => {
  * @param {bool} lazyLoadStudy - "enableStudyLazyLoad"; Request series meta async instead of blocking
  * @param {string|bool} singlepart - indicates of the retrieves can fetch singlepart.  Options are bulkdata, video, image or boolean true
  */
-function createDicomWebTreeApi(dicomWebConfig, UserAuthenticationService) {
+function createDicomWebTreeApi(dicomWebConfig, servicesManager) {
+  const { userAuthenticationService } = servicesManager.services;
   const {
     qidoRoot,
     wadoRoot,
@@ -123,7 +124,7 @@ function createDicomWebTreeApi(dicomWebConfig, UserAuthenticationService) {
     staticWado,
     healthlake,
     singlepart,
-    headers: UserAuthenticationService.getAuthorizationHeader(),
+    headers: userAuthenticationService.getAuthorizationHeader(),
     errorInterceptor: errorHandler.getHTTPErrorHandler(),
   };
 
@@ -132,7 +133,7 @@ function createDicomWebTreeApi(dicomWebConfig, UserAuthenticationService) {
     singlepart,
     staticWado,
     healthlake,
-    headers: UserAuthenticationService.getAuthorizationHeader(),
+    headers: userAuthenticationService.getAuthorizationHeader(),
     errorInterceptor: errorHandler.getHTTPErrorHandler(),
   };
 
@@ -160,7 +161,7 @@ function createDicomWebTreeApi(dicomWebConfig, UserAuthenticationService) {
       studies: {
         mapParams: mapParams.bind(),
         search: async function (origParams) {
-          const headers = UserAuthenticationService.getAuthorizationHeader();
+          const headers = userAuthenticationService.getAuthorizationHeader();
           if (headers) {
             qidoDicomWebClient.headers = headers;
           }
@@ -207,7 +208,7 @@ function createDicomWebTreeApi(dicomWebConfig, UserAuthenticationService) {
       series: {
         // mapParams: mapParams.bind(),
         search: async function (studyInstanceUid) {
-          const headers = UserAuthenticationService.getAuthorizationHeader();
+          const headers = userAuthenticationService.getAuthorizationHeader();
           if (headers) {
             qidoDicomWebClient.headers = headers;
           }
@@ -240,7 +241,7 @@ function createDicomWebTreeApi(dicomWebConfig, UserAuthenticationService) {
 
       instances: {
         search: (studyInstanceUid, queryParameters) => {
-          const headers = UserAuthenticationService.getAuthorizationHeader();
+          const headers = userAuthenticationService.getAuthorizationHeader();
           if (headers) {
             qidoDicomWebClient.headers = headers;
           }
@@ -342,7 +343,7 @@ function createDicomWebTreeApi(dicomWebConfig, UserAuthenticationService) {
           sortFunction,
           madeInClient = false,
         }) => {
-          const headers = UserAuthenticationService.getAuthorizationHeader();
+          const headers = userAuthenticationService.getAuthorizationHeader();
           if (headers) {
             wadoDicomWebClient.headers = headers;
           }
@@ -368,7 +369,7 @@ function createDicomWebTreeApi(dicomWebConfig, UserAuthenticationService) {
     store: {
       dicom: async dataset => {
         // remove 
-        const headers = UserAuthenticationService.getAuthorizationHeader();
+        const headers = userAuthenticationService.getAuthorizationHeader();
         if (headers) {
           wadoDicomWebClient.headers = headers;
         }
