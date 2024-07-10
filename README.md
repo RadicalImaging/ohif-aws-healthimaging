@@ -5,9 +5,19 @@ Note - The official name for the service is "AWS HealthImaging".  Before GA it w
 # Setting up
 
 ## Prerequisites
-* Node.js +14
-* OHIF follow the [Getting started guide if needed](https://v3-docs.ohif.org/development/getting-started/)
-* Make sure you are checkout in the branch `v3-stable`
+* Node.js +18
+* Yarn 1.22.22.  Note that OHIF uses a legacy version of yarn, you need to force yarn to use classic mode to build properly.  
+  ``` bash
+  > npm i -g yarn # install yarn
+  > yarn set version classic # force yarn to use classic version.  Make sure you do this from your repo directories
+  ```
+* OHIF follow the [Getting started guide if needed](https://v3-docs.ohif.org/development/getting-started/).
+* Checkout the latest release branch.  3.8 is known to work, master may be unstable so don't start there in case it is broken
+  ```bash
+  > git remote add upstream git@github.com:OHIF/Viewers.git # make sure your fork upstream is set properly
+  > git fetch upstream # get the list of branches from upstream repo
+  > git checkout release/3.8 # switch to a specific branch
+  ```
 * Install ohif-aws-healthimaging package:
 * Create an access key in the AWS portal
 * Follow AWS documentation on how to create an AWS Health Imaging Datastore and load it with DICOM data
@@ -60,15 +70,22 @@ yarn start # in the OHIF platform/viewer folder
 http://localhost:3000/viewers?StudyInstanceUIDs=$DICOMStudyUIDHere&ImageSetID=$ImageSetIDHere
 ```
 
-# How to contribute
+# How to use a local version of ohif-aws-healthimaging
+
+Fork the repository and make a local clone
+
+From your ohif-aws-healthimaging directory
+
 ```bash
-git clone git@github.com:RadicalImaging/ohif-aws-healthimaging.git
-cd ohif-aws-healthimaging
 yarn install
-# rebuild the plugin on every change
-yarn watch
-# start coding
-yarn test # to run unit tests
+yarn watch # auto rebuild on change to source
+```
+
+From the OHIF Viewers directory
+```bash
+yarn cli remove-extension ohif-aws-healthimaging
+yarn cli link-extension $PATH_TO_YOUR_OHIF_AWS_HEALTHIMAGING_DIR
+yarn run dev
 ```
 
 ## Description 
