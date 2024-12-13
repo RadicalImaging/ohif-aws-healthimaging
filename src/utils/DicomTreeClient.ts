@@ -242,16 +242,6 @@ function reduceMetadata(metadataArray: any[], config: HealthLake) {
         const series = seriesBySerieId[key];
         seriesBySerieId[key] = seriesBySerieId[key][0];
         seriesBySerieId[key].Instances = series.reduce((acc, cur) => {
-            Object.keys(cur.Instances).forEach((instanceKey) => {
-                const instance = cur.Instances[instanceKey];
-                if(instance.DICOM.RescaleSlope !== undefined) {
-                    instance.DICOM.RescaleSlope = Math.floor(instance.DICOM.RescaleSlope)
-                }
-
-                if(instance.DICOM.RescaleIntercept !== undefined) {
-                    instance.DICOM.RescaleIntercept = Math.floor(instance.DICOM.RescaleIntercept)
-                }
-            });
             return Object.assign(acc, cur.Instances);
         }, {});
     });
