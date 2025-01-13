@@ -72,7 +72,10 @@ const initializeHealthlakeFetch = (healthlake) => {
       xhr.open('POST', uri, true);
       xhr.wasGetResponseHeader = xhr.getResponseHeader;
       xhr.getResponseHeader = function (key: string) {
-        if (key == 'Content-Type') return 'image/jphc';
+        if (key == 'Content-Type') {
+          let value = this.wasGetResponseHeader(key);
+          return value == "image/j2c" ? 'image/jp2' : "image/jphc";
+        }
         return this.wasGetResponseHeader(key);
       };
 
