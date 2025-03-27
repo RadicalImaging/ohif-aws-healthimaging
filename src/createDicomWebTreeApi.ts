@@ -36,17 +36,21 @@ const metadataProvider = classes.MetadataProvider;
 const retrievedStudies = {};
 
 const initializeHealthlakeFetch = (healthlake) => {
-  if( !healthlake.endpoint ) throw new Error('endpoint is mandatory');
-  cornerstoneDICOMImageLoader.configure({
-    open: function (xhr: any, url: string) {
+  if (!healthlake.endpoint) throw new Error('endpoint is mandatory');
+
+  // Register a request interceptor for the imageLoader+
+  cornerstoneDICOMImageLoader.internal.setOptions({
+    open: function ({ xhr, url }) {
       const urlParams = new URLSearchParams(url);
       const datastoreId = urlParams.get('DatastoreID');
       const collectionId = urlParams.get('ImageSetID');
       const imageFrameId = urlParams.get('frameID');
       const isAwsHealthImagingRequest = urlParams.get('healthlake');
-      if(!isAwsHealthImagingRequest) {
+
+      if (!isAwsHealthImagingRequest) {
         return xhr.open('get', url, true);
       }
+
       const uri =
         healthlake.endpoint +
         '/datastore/' +
@@ -55,19 +59,19 @@ const initializeHealthlakeFetch = (healthlake) => {
         collectionId +
         '/getImageFrame';
 
-
       const body = JSON.stringify({
-        "imageFrameId" : imageFrameId
+        imageFrameId: imageFrameId,
       });
 
-      const signer = healthlake.awsAccessKeyID ? new AwsV4Signer({
-        ...awsCredentials(healthlake),
-        service: 'medical-imaging',
-        url: uri,
-        method: 'POST',
-        body,
-      }) : null;
-
+      const signer = healthlake.awsAccessKeyID
+        ? new AwsV4Signer({
+            ...awsCredentials(healthlake),
+            service: 'medical-imaging',
+            url: uri,
+            method: 'POST',
+            body,
+          })
+        : null;
 
       xhr.open('POST', uri, true);
       xhr.wasGetResponseHeader = xhr.getResponseHeader;
@@ -79,17 +83,24 @@ const initializeHealthlakeFetch = (healthlake) => {
       xhr.wasSend = xhr.send;
       xhr.send = () => {
         if (signer) {
-          signer.sign().then(({headers}) => {
+          signer.sign().then(({ headers }) => {
             xhr.setRequestHeader('x-amz-date', headers.get('x-amz-date'));
             xhr.setRequestHeader('Authorization', headers.get('Authorization'));
             // 'x-amz-security-token' request header is only required if temporary credentials used. Otherwise will cause authentication error.
-            headers.get('x-amz-security-token') && xhr.setRequestHeader('x-amz-security-token', headers.get('x-amz-security-token'));
+            headers.get('x-amz-security-token') &&
+              xhr.setRequestHeader(
+                'x-amz-security-token',
+                headers.get('x-amz-security-token')
+              );
             xhr.wasSend(body);
           });
         } else {
           xhr.wasSend(body);
         }
-      }
+      };
+
+      // Return true to indicate we've handled this request
+      return true;
     },
   });
 };
@@ -153,8 +164,8 @@ function createDicomWebTreeApi(dicomWebConfig, servicesManager) {
         queryStudyInstanceUIDs || paramsStudyInstanceUIDs;
       const StudyInstanceUIDsAsArray =
         StudyInstanceUIDs && Array.isArray(StudyInstanceUIDs)
-        ? StudyInstanceUIDs
-        : [StudyInstanceUIDs];
+          ? StudyInstanceUIDs
+          : [StudyInstanceUIDs];
       return StudyInstanceUIDsAsArray;
     },
     query: {
@@ -174,9 +185,10 @@ function createDicomWebTreeApi(dicomWebConfig, servicesManager) {
           if (window.healthlake && window.healthlake.ImageSetID) {
             // Todo implement image set id search
             const { ImageSetID, datastoreID } = window.healthlake;
-            const tree = await implementation._retrieveSeriesMetadataDeduplicated(
-              ImageSetID
-            );
+            const tree =
+              await implementation._retrieveSeriesMetadataDeduplicated(
+                ImageSetID
+              );
             const instance = tree[0];
             return [
               {
@@ -217,11 +229,11 @@ function createDicomWebTreeApi(dicomWebConfig, servicesManager) {
             studyInstanceUid
           );
           const seriesUids = {};
-          tree.forEach(instance => {
+          tree.forEach((instance) => {
             const { SeriesInstanceUID } = instance;
             const aSeries = seriesUids[SeriesInstanceUID];
             if (aSeries) {
-              aSeries.numSeriesInstances++
+              aSeries.numSeriesInstances++;
               return;
             }
             seriesUids[SeriesInstanceUID] = {
@@ -269,7 +281,7 @@ function createDicomWebTreeApi(dicomWebConfig, servicesManager) {
        * @returns an absolute URL to the resource, if the absolute URL can be retrieved as singlepart,
        *    or is already retrieved, or a promise to a URL for such use if a BulkDataURI
        */
-      directURL: params => {
+      directURL: (params) => {
         const {
           instance,
           tag = 'PixelData',
@@ -291,7 +303,7 @@ function createDicomWebTreeApi(dicomWebConfig, servicesManager) {
           (singlepart !== true && singlepart.indexOf(fetchPart) === -1)
         ) {
           if (value.retrieveBulkData) {
-            return value.retrieveBulkData().then(arr => {
+            return value.retrieveBulkData().then((arr) => {
               value.DirectRetrieveURL = URL.createObjectURL(
                 new Blob([arr], { type: defaultType })
               );
@@ -302,11 +314,8 @@ function createDicomWebTreeApi(dicomWebConfig, servicesManager) {
           return undefined;
         }
 
-        const {
-          StudyInstanceUID,
-          SeriesInstanceUID,
-          SOPInstanceUID,
-        } = instance;
+        const { StudyInstanceUID, SeriesInstanceUID, SOPInstanceUID } =
+          instance;
         const BulkDataURI =
           (value && value.BulkDataURI) ||
           `series/${SeriesInstanceUID}/instances/${SOPInstanceUID}${defaultPath}`;
@@ -367,8 +376,8 @@ function createDicomWebTreeApi(dicomWebConfig, servicesManager) {
     },
 
     store: {
-      dicom: async dataset => {
-        // remove 
+      dicom: async (dataset) => {
+        // remove
         const headers = userAuthenticationService.getAuthorizationHeader();
         if (headers) {
           wadoDicomWebClient.headers = headers;
@@ -376,7 +385,7 @@ function createDicomWebTreeApi(dicomWebConfig, servicesManager) {
 
         const meta = {
           FileMetaInformationVersion:
-          dataset._meta.FileMetaInformationVersion.Value,
+            dataset._meta.FileMetaInformationVersion.Value,
           MediaStorageSOPClassUID: dataset.SOPClassUID,
           MediaStorageSOPInstanceUID: dataset.SOPInstanceUID,
           TransferSyntaxUID: EXPLICIT_VR_LITTLE_ENDIAN,
@@ -403,7 +412,7 @@ function createDicomWebTreeApi(dicomWebConfig, servicesManager) {
      * Retrieves the series metadata asynchronously from the deduplicated
      * tree structure, returning it.
      */
-    _retrieveSeriesMetadataDeduplicated: async StudyInstanceUID => {
+    _retrieveSeriesMetadataDeduplicated: async (StudyInstanceUID) => {
       const aStudy = retrievedStudies[StudyInstanceUID];
       if (aStudy) {
         console.log('Already have study', aStudy);
@@ -439,7 +448,7 @@ function createDicomWebTreeApi(dicomWebConfig, servicesManager) {
       const seriesSummaryMetadata = {};
       const instancesPerSeries = {};
 
-      tree.forEach(instance => {
+      tree.forEach((instance) => {
         const { SeriesInstanceUID } = instance;
         if (!seriesSummaryMetadata[SeriesInstanceUID]) {
           seriesSummaryMetadata[SeriesInstanceUID] = {
@@ -478,14 +487,13 @@ function createDicomWebTreeApi(dicomWebConfig, servicesManager) {
       const seriesMetadata = Object.values(seriesSummaryMetadata);
       DicomMetadataStore.addSeriesMetadata(seriesMetadata, false);
 
-      Object.keys(instancesPerSeries).forEach(seriesUID =>
+      Object.keys(instancesPerSeries).forEach((seriesUID) =>
         DicomMetadataStore.addInstances(instancesPerSeries[seriesUID], false)
       );
       performance.measure('healthlake:convert-metadataTree', {
-            start: startTime,
-            end: performance.now(),
-        }
-      );
+        start: startTime,
+        end: performance.now(),
+      });
     },
 
     deleteStudyMetadataPromise: deleteStudyMetadataTreePromise,
@@ -498,8 +506,10 @@ function createDicomWebTreeApi(dicomWebConfig, servicesManager) {
         return imageIds;
       }
 
-      displaySet.images.forEach(instance => {
-        const numberOfFrames = instance.NumberOfFrames ? parseInt(instance.NumberOfFrames) : 0;
+      displaySet.images.forEach((instance) => {
+        const numberOfFrames = instance.NumberOfFrames
+          ? parseInt(instance.NumberOfFrames)
+          : 0;
         if (numberOfFrames > 1) {
           for (let i = 0; i < numberOfFrames; i++) {
             const imageId = this.getImageIdsForInstance({
@@ -520,7 +530,9 @@ function createDicomWebTreeApi(dicomWebConfig, servicesManager) {
     getImageIdsForInstance({ instance, frame = 0 }) {
       const { DatastoreID, ImageFrames, ImageSetID } = instance;
       const frameID = ImageFrames?.[frame]?.ID;
-      const healthlakeParam = qidoDicomWebClient.healthlake?.images ? "true" : "false";
+      const healthlakeParam = qidoDicomWebClient.healthlake?.images
+        ? 'true'
+        : 'false';
       const extraParameters =
         (DatastoreID && {
           DatastoreID,
@@ -537,7 +549,7 @@ function createDicomWebTreeApi(dicomWebConfig, servicesManager) {
       });
       return imageIds;
     },
-    getStudyInstanceUIDs({ params, query }: { params: any; query: any}) {
+    getStudyInstanceUIDs({ params, query }: { params: any; query: any }) {
       const { StudyInstanceUIDs: paramsStudyInstanceUIDs } = params;
       const queryStudyInstanceUIDs = utils.splitComma(
         query.getAll('StudyInstanceUIDs')
