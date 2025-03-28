@@ -1,6 +1,6 @@
 {
   "name": "ohif-aws-healthimaging",
-  "version": "0.11.0",
+  "version": "0.12.0",
   "description": "Support reading tree structured metadata",
   "author": "Bill Wallace, Mateus Freira,Radical Imaging, Ibrahim Mohamed, Jefferson Tang",
   "keywords": [
