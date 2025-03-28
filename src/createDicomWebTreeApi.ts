@@ -40,7 +40,7 @@ const initializeHealthlakeFetch = (healthlake) => {
 
   // Register a request interceptor for the imageLoader+
   cornerstoneDICOMImageLoader.internal.setOptions({
-    open: function ({ xhr, url }) {
+    open: function ( xhr, url, defaultHeaders, params) {
       const urlParams = new URLSearchParams(url);
       const datastoreId = urlParams.get('DatastoreID');
       const collectionId = urlParams.get('ImageSetID');
