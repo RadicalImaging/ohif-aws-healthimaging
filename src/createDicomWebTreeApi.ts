@@ -37,8 +37,10 @@ const retrievedStudies = {};
 
 const initializeHealthlakeFetch = (healthlake) => {
   if( !healthlake.endpoint ) throw new Error('endpoint is mandatory');
-  cornerstoneDICOMImageLoader.configure({
-    open: function (xhr: any, url: string) {
+
+  // Register a request interceptor for the imageLoader
+  cornerstoneDICOMImageLoader.internal.setOptions({
+    open: function ( xhr, url, defaultHeaders, params) {
       const urlParams = new URLSearchParams(url);
       const datastoreId = urlParams.get('DatastoreID');
       const collectionId = urlParams.get('ImageSetID');

@@ -24,7 +24,7 @@ export type HealthLake = {
  * performing searches doesn't work.  This version fixes the query issue
  * by manually implementing a query option.
  */
-export default class DicomTreeClient extends api.DICOMwebClient {
+export default class DicomTreeClient {
     healthlake: HealthLake;
     staticWado = false;
 
@@ -45,7 +45,6 @@ export default class DicomTreeClient extends api.DICOMwebClient {
     };
 
     constructor(qidoConfig) {
-        super(qidoConfig);
         this.staticWado = qidoConfig.staticWado;
         const {
             healthlake
