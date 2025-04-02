@@ -1,4 +1,4 @@
-import { getFetch } from './getFetch';
+import { getFetch } from './getFetch.ts';
 
 const loadMetaDataInternal = async (datastoreId, collectionId, config) => {
     const uri = config.endpoint + '/datastore/' + datastoreId + '/imageSet/' + collectionId + '/getImageSetMetadata'

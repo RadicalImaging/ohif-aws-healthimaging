@@ -1,13 +1,13 @@
 {
   "name": "ohif-aws-healthimaging",
-  "version": "0.12.1",
+  "version": "0.12.2",
   "description": "Support reading tree structured metadata",
   "author": "Bill Wallace, Mateus Freira,Radical Imaging, Ibrahim Mohamed, Jefferson Tang",
   "keywords": [
     "ohif-extension"
   ],
   "license": "MIT",
-  "main": "dist/umd/ohif-aws-healthimaging/index.umd.js",
+  "main": "dist/esm/ohif-aws-healthimaging/index.esm.js",
   "files": [
     "dist/**",
     "README.md"
@@ -17,6 +17,13 @@
     "url": "git+https://github.com/RadicalImaging/ohif-aws-healthimaging.git"
   },
   "module": "src/index.tsx",
+  "exports": {
+    ".": {
+      "import": "./dist/esm/ohif-aws-healthimaging/index.esm.js",
+      "require": "./dist/esm/ohif-aws-healthimaging/index.esm.js"
+    }
+  },
+  "type": "module",
   "engines": {
     "node": ">=14",
     "npm": ">=6",

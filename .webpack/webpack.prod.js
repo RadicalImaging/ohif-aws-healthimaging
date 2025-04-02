@@ -1,95 +1,54 @@
-const path = require('path');
-const pkg = require('../package.json');
+import path from 'path';
+import { fileURLToPath } from 'url';
+import pkg from '../package.json' assert { type: 'json' };
 
-const outputFile = 'index.umd.js';
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+const outputFile = 'index.esm.js';
 const rootDir = path.resolve(__dirname, '../');
-const outputFolder = path.join(__dirname, `../dist/umd/${pkg.name}/`);
+const outputFolder = path.join(__dirname, `../dist/esm/${pkg.name}/`);
 
 // Todo: add ESM build for the extension in addition to umd build
 
 const config = {
   mode: 'production',
-  entry: rootDir + '/' + pkg.module,
+  entry: path.join(rootDir, 'src/index.tsx'),
   devtool: 'source-map',
   output: {
     path: outputFolder,
     filename: outputFile,
-    library: pkg.name,
-    libraryTarget: 'umd',
-    chunkFilename: '[name].chunk.js',
-    umdNamedDefine: true,
-    globalObject: "typeof self !== 'undefined' ? self : this",
-  },
-  externals: [
-    {
-      "cornerstone-wado-image-loader": {
-        root: 'cornerstone-wado-image-loader',
-        commonjs2: 'cornerstone-wado-image-loader',
-        commonjs: 'cornerstone-wado-image-loader',
-        amd: 'cornerstone-wado-image-loader',
-      },
-      "@cornerstonejs/core": {
-        root: '@cornerstonejs/core',
-        commonjs2: '@cornerstonejs/core',
-        commonjs: '@cornerstonejs/core',
-        amd: '@cornerstonejs/core',
-      },
-      "@cornerstonejs/dicom-image-loader": {
-        root: '@cornerstonejs/dicom-image-loader',
-        commonjs2: '@cornerstonejs/dicom-image-loader',
-        commonjs: '@cornerstonejs/dicom-image-loader',
-        amd: '@cornerstonejs/dicom-image-loader',
-      },
-      'react': {
-        root: 'React',
-        commonjs2: 'react',
-        commonjs: 'react',
-        amd: 'react',
-      },
-      'config-point': {
-        root: 'config-point',
-        commonjs2: 'config-point',
-        commonjs: 'config-point',
-        amd: 'config-point',
-      },
-      'classnames': {
-        root: 'classnames',
-        commonjs2: 'classnames',
-        commonjs: 'classnames',
-        amd: 'classnames',
-      },
-      'react-router-dom': {
-        root: 'react-router-dom',
-        commonjs2: 'react-router-dom',
-        commonjs: 'react-router-dom',
-        amd: 'react-router-dom',
-      },
-      'dicomweb-client': {
-        root: 'dicomweb-client',
-        commonjs2: 'dicomweb-client',
-        commonjs: 'dicomweb-client',
-        amd: 'dicomweb-client',
-      },
-      dcmjs: {
-        root: 'dcmjs',
-        commonjs2: 'dcmjs',
-        commonjs: 'dcmjs',
-        amd: 'dcmjs',
-      },
-      '@ohif/core': {
-        commonjs2: '@ohif/core',
-        commonjs: '@ohif/core',
-        amd: '@ohif/core',
-        root: '@ohif/core',
-      },
-      '@ohif/ui': {
-        commonjs2: '@ohif/ui',
-        commonjs: '@ohif/ui',
-        amd: '@ohif/ui',
-        root: '@ohif/ui',
-      },
+    library: {
+      type: 'module',
     },
-  ],
+    chunkFilename: '[name].chunk.js',
+    module: true,
+    environment: {
+      module: true,
+    },
+  },
+  experiments: {
+    outputModule: true,
+  },
+  externals: {
+    'cornerstone-wado-image-loader': 'cornerstone-wado-image-loader',
+    '@cornerstonejs/core': '@cornerstonejs/core',
+    '@cornerstonejs/dicom-image-loader': '@cornerstonejs/dicom-image-loader',
+    react: {
+      module: 'react',
+      import: 'react',
+    },
+    'config-point': 'config-point',
+    classnames: 'classnames',
+    'react-router-dom': 'react-router-dom',
+    'dicomweb-client': 'dicomweb-client',
+    dcmjs: 'dcmjs',
+    '@ohif/core': {
+      module: '@ohif/core',
+      import: '@ohif/core',
+    },
+    '@ohif/ui': '@ohif/ui',
+  },
   module: {
     rules: [
       {
@@ -103,9 +62,13 @@ const config = {
     ],
   },
   resolve: {
-    modules: [path.resolve('../../node_modules'),path.resolve('./node_modules'), path.resolve('./src')],
+    modules: [
+      path.resolve('../../node_modules'),
+      path.resolve('./node_modules'),
+      path.resolve('./src'),
+    ],
     extensions: ['.json', '.js', '.jsx', '.tsx', '.ts'],
   },
 };
 
-module.exports = config;
+export default config;

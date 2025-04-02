@@ -1,4 +1,4 @@
-import getWADORSImageId from './getWADORSImageId';
+import getWADORSImageId from './getWADORSImageId.js';
 /**
  * Obtain an imageId for Cornerstone from an image instance
  *
